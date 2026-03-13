@@ -3,1034 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VyVStudy · Verificación y Validación de Software</title>
+<title>EstudioHub · Mis Materias</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#f0f4f8; --surface:#ffffff; --surface2:#f8fafc;
-  --border:#dde3ea; --border2:#c8d2dc;
-  --text:#0f1923; --text2:#2d3f52; --muted:#5a7085; --muted2:#7a90a4;
-  --blue:#0066ff; --blue-bg:#e8f0ff; --blue-light:#dbeafe;
-  --purple:#7c3aed; --purple-bg:#f3eeff;
-  --red:#dc2626; --red-bg:#fff0f0;
-  --green:#059669; --green-bg:#e6faf4;
-  --amber:#d97706; --amber-bg:#fff8e6;
-  --teal:#0891b2; --teal-bg:#e0f7fa;
-  --correct:#059669; --wrong:#dc2626;
-  --mono:'JetBrains Mono',monospace;
-  --sans:'Inter',sans-serif;
-  --r:10px;
+  --bg:#f0f4f8;--surface:#ffffff;--border:#dde3ea;--border2:#c8d2dc;
+  --text:#0f1923;--text2:#2d3f52;--muted:#5a7085;--muted2:#7a90a4;
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
+  --r:12px;
   --sh:0 2px 8px rgba(0,0,0,0.07),0 0 0 1px rgba(0,0,0,0.04);
-  --sh-md:0 6px 24px rgba(0,0,0,0.1);
-  --sh-lg:0 16px 48px rgba(0,0,0,0.14);
+  --sh-md:0 8px 28px rgba(0,0,0,0.12);
+  --sh-lg:0 20px 60px rgba(0,0,0,0.15);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;font-size:16px;line-height:1.6;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;font-size:16px;line-height:1.6}
 
-/* ── SIDEBAR ── */
-.sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;transition:transform .3s;box-shadow:2px 0 12px rgba(0,0,0,.06)}
-.sb-logo{padding:1.5rem 1.25rem 1.25rem;border-bottom:1px solid var(--border)}
-.sb-badge{font-family:var(--mono);font-size:.6rem;color:var(--purple);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem;font-weight:600}
-.sb-title{font-size:1.4rem;font-weight:800;color:var(--text);letter-spacing:-.02em}
-.sb-title span{color:var(--purple)}
-.nav{padding:.75rem 0;flex:1;overflow-y:auto}
-.nav-sec{font-family:var(--mono);font-size:.6rem;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;padding:.9rem 1.25rem .35rem;font-weight:600}
-.nav-item{display:flex;align-items:center;gap:.55rem;padding:.55rem 1.25rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--muted);transition:all .15s;border-left:3px solid transparent}
-.nav-item:hover{color:var(--text);background:var(--bg)}
-.nav-item.active{color:var(--purple);border-left-color:var(--purple);background:var(--purple-bg);font-weight:600}
-.sb-footer{padding:1rem 1.25rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:.65rem;color:var(--muted)}
-.xp-bar{background:var(--border);border-radius:3px;height:5px;margin-top:.4rem;overflow:hidden}
-.xp-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:3px;transition:width .5s}
+/* ── TOPBAR ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:1.1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.logo{font-size:1.35rem;font-weight:800;letter-spacing:-.025em}
+.logo span{color:#6366f1}
+.logo-sub{font-family:var(--mono);font-size:.62rem;color:var(--muted2);letter-spacing:.1em;text-transform:uppercase;margin-top:.1rem}
+.semester{font-family:var(--mono);font-size:.7rem;color:var(--muted);background:var(--bg);padding:.3rem .7rem;border-radius:20px;border:1px solid var(--border)}
 
-/* ── MAIN ── */
-.main{margin-left:256px;min-height:100vh}
-.topbar{position:sticky;top:0;background:rgba(240,244,248,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:50}
-.tb-title{font-size:.78rem;font-weight:600;color:var(--muted)}
-.tb-stats{display:flex;gap:1.5rem;font-size:.78rem}
-.stat{display:flex;align-items:center;gap:.35rem}
-.stat-v{color:var(--purple);font-weight:700}
-.stat-l{color:var(--muted)}
-.content{padding:2.5rem 2rem;max-width:860px}
+/* ── HERO ── */
+.hero{padding:4rem 2.5rem 3rem;max-width:900px;margin:0 auto}
+.hero-ey{font-family:var(--mono);font-size:.72rem;font-weight:600;color:#6366f1;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.65rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;line-height:1.06;letter-spacing:-.035em;margin-bottom:.85rem}
+.hero h1 em{color:#6366f1;font-style:normal}
+.hero p{font-size:1.05rem;color:var(--muted);line-height:1.7;max-width:520px}
 
-/* ── PAGES ── */
-.page{display:none;animation:fadeIn .25s ease}
-.page.active{display:block}
+/* ── GRID ── */
+.grid-wrap{max-width:900px;margin:0 auto;padding:0 2.5rem 4rem}
+.section-label{font-family:var(--mono);font-size:.68rem;font-weight:700;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.1rem;padding-left:.25rem}
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:1.25rem}
 
-/* ── SEC TITLE ── */
-.sec-title{display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;flex-wrap:wrap}
-.sec-title h2{font-size:1.75rem;font-weight:800;letter-spacing:-.025em}
-.chip{font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;background:var(--purple-bg);color:var(--purple);border:1px solid #d8b4fe}
+/* ── SUBJECT CARD ── */
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .2s,transform .2s;position:relative}
+.card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+.card-stripe{height:5px;width:100%}
+.card-body{padding:1.4rem 1.5rem 1rem}
+.card-ico{font-size:2rem;margin-bottom:.5rem}
+.card-label{font-family:var(--mono);font-size:.6rem;font-weight:600;color:var(--muted2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem}
+.card-title{font-size:1.1rem;font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:.4rem}
+.card-desc{font-size:.87rem;color:var(--muted);line-height:1.55;margin-bottom:1rem}
+.card-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.tag{font-family:var(--mono);font-size:.6rem;font-weight:600;padding:.18rem .5rem;border-radius:6px;border:1px solid var(--border)}
 
-/* ── HOME ── */
-.hero{margin-bottom:2.5rem}
-.hero-ey{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem}
-.hero h1{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:.75rem}
-.hero h1 em{color:var(--purple);font-style:normal}
-.hero p{font-size:1rem;color:var(--muted);line-height:1.65;max-width:500px}
-.mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
-.mod{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;cursor:pointer;transition:all .2s;box-shadow:var(--sh);position:relative;overflow:hidden}
-.mod::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.mod.cb::before{background:var(--blue)}.mod.cp::before{background:var(--purple)}.mod.cr::before{background:var(--red)}.mod.ca::before{background:var(--amber)}.mod.ct::before{background:var(--teal)}
-.mod:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--border2)}
-.mod-ico{font-size:2rem;margin-bottom:.6rem}
-.mod-lbl{font-family:var(--mono);font-size:.62rem;font-weight:600;color:var(--muted2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
-.mod-ttl{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
-.mod-desc{font-size:.85rem;color:var(--muted);line-height:1.5;margin-bottom:.9rem}
-.mod-meta{display:flex;gap:.75rem;font-size:.75rem;color:var(--muted2);font-family:var(--mono)}
+/* ── EXPAND PANEL ── */
+.card-expand{display:none;border-top:1px solid var(--border);padding:1rem 1.5rem;background:#fafbfc;animation:expandIn .2s ease}
+.card-expand.open{display:block}
+.expand-label{font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--muted2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.65rem}
+.guide-btns{display:flex;gap:.65rem;flex-wrap:wrap}
 
-/* ── GLOSARIO ── */
-.glos-layout{display:grid;grid-template-columns:210px 1fr;gap:1.25rem;align-items:start}
-.glos-index{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column;position:sticky;top:68px;max-height:calc(100vh - 90px)}
-.glos-search-wrap{padding:.65rem;border-bottom:1px solid var(--border)}
-.glos-search{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:.45rem .7rem;font-family:var(--sans);font-size:.8rem;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s}
-.glos-search:focus{border-color:var(--purple)}
-.glos-pills{display:flex;gap:.25rem;padding:.45rem .65rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.gpill{font-size:.6rem;font-weight:600;padding:.18rem .45rem;border-radius:10px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .15s;font-family:var(--mono)}
-.gpill:hover,.gpill.active{background:var(--purple);border-color:var(--purple);color:#fff}
-.glos-list{flex:1;overflow-y:auto;padding:.3rem 0}
-.glos-item{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--muted);transition:all .15s;border-left:3px solid transparent}
-.glos-item:hover{background:var(--bg);color:var(--text)}
-.glos-item.active{background:var(--purple-bg);color:var(--purple);border-left-color:var(--purple);font-weight:700}
-.glos-item .gi-ico{font-size:1rem;flex-shrink:0}
-.glos-item .gi-num{font-family:var(--mono);font-size:.58rem;color:var(--muted2);margin-left:auto;flex-shrink:0}
-.glos-slide-wrap{display:flex;flex-direction:column;gap:.85rem}
-.glos-progress{display:flex;align-items:center;gap:.75rem;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
-.glos-prog-bar{flex:1;background:var(--border);height:6px;border-radius:3px;overflow:hidden}
-.glos-prog-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.glos-slide{border-radius:20px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;animation:slideIn .35s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;min-height:500px}
-.gs-hero{padding:2.25rem 2.5rem 2rem;display:flex;align-items:flex-start;gap:1.5rem;position:relative}
-.gs-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(0,0,0,.07)}
-.gs-big-icon{font-size:3.8rem;line-height:1;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.15));animation:iconPop .4s cubic-bezier(.34,1.56,.64,1)}
-.gs-hero-text{flex:1;min-width:0}
-.gs-tag{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:.22rem .65rem;border-radius:20px;margin-bottom:.65rem}
-.gs-tag.t-concepto{background:rgba(255,255,255,.35);color:#3b0764;border:1px solid rgba(59,7,100,.2)}
-.gs-tag.t-proceso{background:rgba(255,255,255,.35);color:#78350f;border:1px solid rgba(120,53,15,.2)}
-.gs-tag.t-modelo{background:rgba(255,255,255,.35);color:#1e3a5f;border:1px solid rgba(30,58,95,.2)}
-.gs-tag.t-metodologia{background:rgba(255,255,255,.35);color:#065f46;border:1px solid rgba(6,95,70,.2)}
-.gs-tag.t-calidad{background:rgba(255,255,255,.35);color:#7f1d1d;border:1px solid rgba(127,29,29,.2)}
-.gs-name{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-.04em;line-height:1.1;color:rgba(0,0,0,.82);text-shadow:0 1px 0 rgba(255,255,255,.4)}
-.gs-body{background:#fff;flex:1;display:flex;flex-direction:column;padding:1.75rem 2.5rem 1.5rem}
-.gs-def{font-size:1.07rem;color:#1a2b3c;line-height:1.82;font-weight:400;flex:1;letter-spacing:.01em}
-.gs-def strong{color:#0f1923;font-weight:700}
-.gs-keys{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1.1rem}
-.gs-key{font-family:var(--mono);font-size:.68rem;font-weight:600;padding:.22rem .6rem;border-radius:6px;background:var(--bg);border:1px solid var(--border);color:var(--muted2);transition:all .15s;cursor:default}
-.gs-memo{margin-top:1.1rem;padding:.9rem 1.1rem;background:var(--bg);border-radius:10px;border-left:3px solid var(--purple);display:flex;gap:.7rem;align-items:flex-start}
-.gs-memo-ico{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
-.gs-memo-text{font-size:.86rem;color:var(--muted);line-height:1.6}
-.gs-memo-text strong{color:var(--text2);font-weight:600}
-.gs-nav{display:flex;align-items:center;justify-content:space-between;margin-top:1.4rem;padding-top:1.1rem;border-top:1px solid var(--border)}
-.gs-nav-info{font-family:var(--mono);font-size:.7rem;color:var(--muted2)}
-.gs-nav-btns{display:flex;gap:.6rem}
-.gs-kbd-hint{display:flex;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.6rem;color:var(--muted2)}
-.gs-kbd{background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:.1rem .35rem;font-size:.6rem;box-shadow:0 1px 0 var(--border2)}
+/* ── GUIDE BUTTONS ── */
+.guide-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.1rem;border-radius:8px;font-family:var(--sans);font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .15s;border:1.5px solid transparent}
+.guide-btn.active-btn{color:#fff}
+.guide-btn.active-btn:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.guide-btn.disabled-btn{background:var(--bg);color:var(--muted2);border-color:var(--border);cursor:not-allowed;opacity:.65}
+.guide-btn .btn-badge{font-family:var(--mono);font-size:.55rem;font-weight:700;padding:.1rem .35rem;border-radius:4px;background:rgba(255,255,255,.25);margin-left:.2rem}
+.guide-btn.disabled-btn .btn-badge{background:rgba(0,0,0,.06);color:var(--muted2)}
 
-/* slide backgrounds by tag */
-.gs-bg-concepto{background:linear-gradient(135deg,#faf5ff,#ede9fe)}
-.gs-bg-proceso{background:linear-gradient(135deg,#fffbeb,#fef3c7)}
-.gs-bg-modelo{background:linear-gradient(135deg,#eff6ff,#dbeafe)}
-.gs-bg-metodologia{background:linear-gradient(135deg,#ecfdf5,#d1fae5)}
-.gs-bg-calidad{background:linear-gradient(135deg,#fef2f2,#fee2e2)}
-.glos-slide::before{content:'';position:absolute;top:0;left:0;right:0;height:5px}
-.gs-bg-concepto::before{background:linear-gradient(90deg,#7c3aed,#6366f1)}
-.gs-bg-proceso::before{background:linear-gradient(90deg,#d97706,#eab308)}
-.gs-bg-modelo::before{background:linear-gradient(90deg,#0066ff,#06b6d4)}
-.gs-bg-metodologia::before{background:linear-gradient(90deg,#059669,#10b981)}
-.gs-bg-calidad::before{background:linear-gradient(90deg,#dc2626,#f97316)}
+/* Toggle arrow */
+.card-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:.9rem 1.5rem;border-top:1px solid var(--border);background:transparent;width:100%;font-family:var(--sans);font-size:.85rem;font-weight:600;color:var(--muted);transition:all .15s;border:none;border-top:1px solid var(--border)}
+.card-toggle:hover{color:var(--text);background:var(--bg)}
+.toggle-arrow{font-size:.85rem;transition:transform .2s}
+.card-toggle.open .toggle-arrow{transform:rotate(180deg)}
 
-@keyframes iconPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+/* ── FOOTER ── */
+.footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;text-align:center;font-family:var(--mono);font-size:.65rem;color:var(--muted2)}
 
-.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.25rem;background:var(--purple);border:none;color:#fff;font-family:var(--sans);font-size:.85rem;font-weight:600;cursor:pointer;border-radius:7px;transition:all .15s}
-.btn:hover{background:#6d28d9;transform:translateY(-1px);box-shadow:0 4px 12px rgba(124,58,237,.3)}
-.btn.sec{background:var(--surface);color:var(--muted);border:1.5px solid var(--border)}
-.btn.sec:hover{background:var(--bg);color:var(--text);border-color:var(--border2);transform:none;box-shadow:none}
-.btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
-.btn.hidden{display:none}
-
-/* ── QUIZ ── */
-.qmeta{display:flex;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap}
-.qchip{font-size:.8rem;font-weight:500;padding:.35rem .8rem;border:1px solid var(--border);border-radius:20px;color:var(--muted);background:var(--surface)}
-.prog-hd{display:flex;justify-content:space-between;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:.5rem}
-.prog-hd .slive{color:var(--green)}
-.prog-tr{background:var(--border);height:5px;border-radius:3px;margin-bottom:1.5rem;overflow:hidden}
-.prog-fi{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:3px;transition:width .4s}
-.qcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:1.75rem;box-shadow:var(--sh);animation:slideIn .3s ease}
-.qnum{font-family:var(--mono);font-size:.65rem;font-weight:600;color:var(--purple);background:var(--purple-bg);padding:.2rem .6rem;border-radius:4px;display:inline-block;margin-bottom:.75rem}
-.qtxt{font-size:1.1rem;font-weight:700;line-height:1.5;color:var(--text);margin-bottom:1.25rem}
-.opts{display:flex;flex-direction:column;gap:.55rem}
-.opt{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 1rem;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;background:var(--bg);color:var(--text);text-align:left;font-family:var(--sans);font-size:.95rem;line-height:1.45;width:100%;font-weight:500}
-.opt:hover:not(.locked){border-color:var(--purple);background:var(--purple-bg)}
-.opt .ltr{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--muted2);flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.1rem .35rem;min-width:24px;text-align:center;transition:all .15s;margin-top:.1rem}
-.opt:hover:not(.locked) .ltr{background:var(--purple);color:#fff;border-color:var(--purple)}
-.opt.correct{border-color:var(--green);background:var(--green-bg)}
-.opt.correct .ltr{background:var(--green);color:#fff;border-color:var(--green)}
-.opt.wrong{border-color:var(--red);background:var(--red-bg)}
-.opt.wrong .ltr{background:var(--red);color:#fff;border-color:var(--red)}
-.opt.locked{cursor:default}
-.fb{margin-top:1rem;padding:1rem 1.1rem;border-radius:8px;font-size:.9rem;line-height:1.6;display:none;font-weight:500}
-.fb.show{display:block;animation:fadeIn .2s}
-.fb.ok{background:var(--green-bg);border:1.5px solid #6ee7b7;color:#065f46}
-.fb.fail{background:var(--red-bg);border:1.5px solid #fca5a5;color:#991b1b}
-.btn-row{margin-top:1.25rem;display:flex;gap:.6rem;flex-wrap:wrap}
-.score-wrap{text-align:center;max-width:440px;margin:0 auto}
-.score-ring{width:130px;height:130px;border-radius:50%;background:var(--purple-bg);border:4px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:1.5rem auto;box-shadow:0 0 0 8px rgba(124,58,237,.08)}
-.score-big{font-size:2.8rem;font-weight:800;color:var(--purple);line-height:1}
-.score-of{font-size:.75rem;color:var(--muted);font-family:var(--mono)}
-.score-ttl{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
-.score-msg{font-size:.92rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
-
-/* ── MODELOS TABLE ── */
-.rtw{overflow-x:auto;border-radius:var(--r);border:1.5px solid var(--border);box-shadow:var(--sh)}
-.rtbl{width:100%;border-collapse:collapse;font-size:.88rem}
-.rtbl th{background:var(--bg);padding:.8rem 1rem;text-align:left;font-family:var(--mono);font-size:.67rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--border);font-weight:700}
-.rtbl td{padding:.8rem 1rem;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top;line-height:1.5}
-.rtbl tr:last-child td{border-bottom:none}
-.rtbl tr:hover td{background:var(--bg)}
-.rtbl td strong{color:var(--text);font-weight:700}
-.ibox{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:1.25rem;box-shadow:var(--sh);margin-top:1.5rem}
-.ibox h4{font-size:.95rem;font-weight:700;color:var(--purple);margin-bottom:.75rem}
-.ibox li{font-size:.9rem;color:var(--text2);padding:.45rem .85rem;background:var(--bg);border-radius:6px;border-left:3px solid var(--purple);line-height:1.5;margin-bottom:.4rem;list-style:none}
-
-/* Steps */
-.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.25rem}
-.spill{display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.65rem .9rem;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted);box-shadow:var(--sh)}
-.spill .sn{width:22px;height:22px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--muted);flex-shrink:0}
-.spill:hover,.spill.active{border-color:var(--purple);color:var(--purple);background:var(--purple-bg)}
-.spill.active .sn{background:var(--purple);color:#fff;border-color:var(--purple)}
-.step-det{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:1.5rem;display:none;animation:fadeIn .2s;box-shadow:var(--sh)}
-.step-det.show{display:block}
-.step-det h4{font-size:1.05rem;font-weight:700;color:var(--purple);margin-bottom:.5rem}
-.step-det p{font-size:.93rem;color:var(--text2);line-height:1.65;margin-bottom:.9rem}
-.step-det li{font-size:.9rem;color:var(--text2);padding:.5rem .9rem;background:var(--bg);border-radius:6px;border-left:3px solid var(--purple);line-height:1.5;list-style:none;margin-bottom:.4rem}
-.slbl{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:1.75rem 0 .75rem}
-.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.5rem}
-.tgi{font-size:.88rem;color:var(--text2);padding:.5rem .9rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:3px solid var(--purple);box-shadow:var(--sh);line-height:1.45}
-.tgi.v{border-left-color:var(--teal)}
-
-/* badge */
-.badge{display:inline-flex;align-items:center;padding:.18rem .55rem;border-radius:6px;font-family:var(--mono);font-size:.65rem;font-weight:700;margin-right:.3rem}
-.badge-green{background:var(--green-bg);color:var(--green);border:1px solid #6ee7b7}
-.badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid #fcd34d}
-.badge-red{background:var(--red-bg);color:var(--red);border:1px solid #fca5a5}
-.badge-blue{background:var(--blue-bg);color:var(--blue);border:1px solid #c0d4ff}
-
-/* Mobile */
-.mob-tog{display:none;position:fixed;top:.75rem;left:.75rem;z-index:200;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.45rem .65rem;cursor:pointer;font-size:1.1rem;color:var(--text);box-shadow:var(--sh)}
-@media(max-width:900px){.glos-layout{grid-template-columns:175px 1fr}}
-@media(max-width:768px){
-  .mob-tog{display:block}
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0);box-shadow:var(--sh-md)}
-  .main{margin-left:0}
-  .content{padding:4.5rem 1rem 2rem}
-  .topbar{padding:.7rem 1rem .7rem 4rem}
-  .mods{grid-template-columns:1fr}
-  .steps-row{grid-template-columns:1fr 1fr}
-  .glos-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr}
-  .glos-index{position:relative;top:auto;max-height:200px}
-  .gs-hero{padding:1.5rem 1.5rem 1.25rem}
-  .gs-body{padding:1.25rem 1.5rem 1.25rem}
-  .gs-big-icon{font-size:2.6rem}
-  .gs-name{font-size:1.4rem}
-  .gs-def{font-size:.97rem}
+/* ── MOBILE ── */
+@media(max-width:640px){
+  .topbar{padding:.85rem 1.25rem}
+  .hero{padding:2.5rem 1.25rem 2rem}
+  .grid-wrap{padding:0 1.25rem 3rem}
+  .subjects-grid{grid-template-columns:1fr}
+  .hero h1{font-size:2rem}
+  .guide-btns{flex-direction:column}
+  .guide-btn{justify-content:center}
 }
+
+@keyframes expandIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 </style>
 </head>
 <body>
-<button class="mob-tog" onclick="toggleSB()">☰</button>
 
-<nav class="sidebar" id="sb">
-  <div class="sb-logo">
-    <div class="sb-badge">// plataforma de estudio</div>
-    <div class="sb-title">VyV<span>Study</span></div>
+<!-- TOPBAR -->
+<header class="topbar">
+  <div>
+    <div class="logo">Estudio<span>Hub</span></div>
+    <div class="logo-sub">// plataforma personal de estudio</div>
   </div>
-  <div class="nav">
-    <div class="nav-sec">Inicio</div>
-    <div class="nav-item active" onclick="nav('home',this)"><span>⌂</span> Dashboard</div>
-    <div class="nav-sec">Tema 1 · V&amp;V</div>
-    <div class="nav-item" onclick="nav('glos1',this)"><span>📖</span> Glosario · V&amp;V Básico</div>
-    <div class="nav-item" onclick="nav('quiz1',this)"><span>✏️</span> Quiz Tema 1</div>
-    <div class="nav-sec">Tema 2 · Modelos</div>
-    <div class="nav-item" onclick="nav('glos2',this)"><span>📖</span> Glosario · Modelos</div>
-    <div class="nav-item" onclick="nav('quiz2',this)"><span>✏️</span> Quiz Tema 2</div>
-    <div class="nav-sec">Tema 3 · Calidad CMM</div>
-    <div class="nav-item" onclick="nav('glos3',this)"><span>📖</span> Glosario · CMM/CMMI</div>
-    <div class="nav-item" onclick="nav('modelos',this)"><span>📊</span> Comparativa Modelos</div>
-    <div class="nav-item" onclick="nav('quiz3',this)"><span>✏️</span> Quiz Tema 3</div>
-  </div>
-  <div class="sb-footer">
-    XP Total: <strong id="xpv" style="color:var(--purple)">0</strong> pts
-    <div class="xp-bar"><div class="xp-fill" id="xpf" style="width:0%"></div></div>
-  </div>
-</nav>
+  <div class="semester">Ene – Jul 2026 · FIME UANL</div>
+</header>
 
-<main class="main">
-  <div class="topbar">
-    <div class="tb-title">Verificación y Validación de Software · FIME UANL</div>
-    <div class="tb-stats">
-      <div class="stat"><span class="stat-v" id="stc">0</span><span class="stat-l"> correctas</span></div>
-      <div class="stat"><span class="stat-v" id="stq">0</span><span class="stat-l"> quizzes</span></div>
-    </div>
-  </div>
-  <div class="content">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-ey">// Dashboard Principal</div>
+  <h1>Tus materias,<br><em>listas para estudiar.</em></h1>
+  <p>Selecciona una materia y elige la guía de estudio que necesitas. Cada guía tiene glosario interactivo, quizzes y práctica por secciones.</p>
+</section>
 
-    <!-- HOME -->
-    <div class="page active" id="page-home">
-      <div class="hero">
-        <div class="hero-ey">// Verificación y Validación · Parcial Examen</div>
-        <h1>Estudia.<br><em>Practica.</em><br>Aprueba.</h1>
-        <p>Tu plataforma de estudio con glosarios interactivos y quizzes sobre V&V, modelos de desarrollo y calidad de software.</p>
-      </div>
-      <div class="mods">
-        <div class="mod cb" onclick="nav('glos1',null)"><div class="mod-ico">📖</div><div class="mod-lbl">Tema 1</div><div class="mod-ttl">Glosario · V&amp;V Básico</div><div class="mod-desc">Verificación, validación, ingeniería de software web y conceptos fundamentales.</div><div class="mod-meta"><span>📚 18 términos</span></div></div>
-        <div class="mod cp" onclick="nav('glos2',null)"><div class="mod-ico">📖</div><div class="mod-lbl">Tema 2</div><div class="mod-ttl">Glosario · Modelos de Desarrollo</div><div class="mod-desc">Cascada, Incremental, Espiral, Ágil, Scrum, UML y más.</div><div class="mod-meta"><span>📚 16 términos</span></div></div>
-        <div class="mod ct" onclick="nav('glos3',null)"><div class="mod-ico">📖</div><div class="mod-lbl">Tema 3</div><div class="mod-ttl">Glosario · CMM / CMMI</div><div class="mod-desc">Modelos de calidad, niveles CMM, CMMI y relación con V&V.</div><div class="mod-meta"><span>📚 14 términos</span></div></div>
-        <div class="mod cb" onclick="nav('quiz1',null)"><div class="mod-ico">✏️</div><div class="mod-lbl">Tema 1</div><div class="mod-ttl">Quiz — V&amp;V y Web</div><div class="mod-desc">20 preguntas sobre los conceptos de verificación, validación e ingeniería web.</div><div class="mod-meta"><span>📝 20 preguntas</span><span>⏱ ~6 min</span></div></div>
-        <div class="mod cp" onclick="nav('quiz2',null)"><div class="mod-ico">✏️</div><div class="mod-lbl">Tema 2</div><div class="mod-ttl">Quiz — Modelos de Desarrollo</div><div class="mod-desc">20 preguntas sobre cascada, espiral, ágil, Scrum y ciclo de vida.</div><div class="mod-meta"><span>📝 20 preguntas</span><span>⏱ ~6 min</span></div></div>
-        <div class="mod ct" onclick="nav('quiz3',null)"><div class="mod-ico">✏️</div><div class="mod-lbl">Tema 3</div><div class="mod-ttl">Quiz — CMM / CMMI</div><div class="mod-desc">20 preguntas sobre modelos de calidad, niveles CMM y su relación con V&V.</div><div class="mod-meta"><span>📝 20 preguntas</span><span>⏱ ~6 min</span></div></div>
-        <div class="mod ca" onclick="nav('modelos',null)"><div class="mod-ico">📊</div><div class="mod-lbl">Referencia</div><div class="mod-ttl">Comparativa de Modelos</div><div class="mod-desc">Tabla comparativa de todos los modelos de desarrollo: ventajas, desventajas y usos.</div><div class="mod-meta"><span>📋 5 modelos</span></div></div>
-      </div>
-    </div>
+<!-- GRID -->
+<section class="grid-wrap">
+  <div class="section-label">Materias activas — Semestre Ene–Jul 2026</div>
+  <div class="subjects-grid">
 
-    <!-- GLOSARIO T1: V&V -->
-    <div class="page" id="page-glos1">
-      <div class="sec-title"><h2>Glosario · Tema 1</h2><span class="chip" id="g1-chip">V&amp;V Básico</span></div>
-      <div class="glos-layout">
-        <div class="glos-index">
-          <div class="glos-search-wrap"><input class="glos-search" id="gsearch1" placeholder="🔍 Buscar…" oninput="gSearch('g1')"></div>
-          <div class="glos-pills" id="gpills1">
-            <button class="gpill active" onclick="gTag('g1','all',this)">Todos</button>
-            <button class="gpill" onclick="gTag('g1','concepto',this)">Concepto</button>
-            <button class="gpill" onclick="gTag('g1','proceso',this)">Proceso</button>
-            <button class="gpill" onclick="gTag('g1','modelo',this)">Modelo</button>
-          </div>
-          <div class="glos-list" id="glist1"></div>
+    <!-- MATERIA 1: Verificación y Validación -->
+    <div class="card" id="card-vyv">
+      <div class="card-stripe" style="background:linear-gradient(90deg,#7c3aed,#6366f1)"></div>
+      <div class="card-body">
+        <div class="card-ico">🔬</div>
+        <div class="card-label">ITS · Grupo 003</div>
+        <div class="card-title">Verificación y Validación de Software</div>
+        <div class="card-desc">V&V, modelos de desarrollo, CMM/CMMI y calidad de software. Ing. Evanivaldo Rivelino Medina Ruiz.</div>
+        <div class="card-tags">
+          <span class="tag" style="background:#f3eeff;color:#7c3aed;border-color:#d8b4fe">V&V</span>
+          <span class="tag" style="background:#f3eeff;color:#7c3aed;border-color:#d8b4fe">CMM</span>
+          <span class="tag" style="background:#f3eeff;color:#7c3aed;border-color:#d8b4fe">Modelos</span>
+          <span class="tag" style="background:#f3eeff;color:#7c3aed;border-color:#d8b4fe">Scrum</span>
         </div>
-        <div class="glos-slide-wrap">
-          <div class="glos-progress">
-            <span id="g1-plab">1 / 18</span>
-            <div class="glos-prog-bar"><div class="glos-prog-fill" id="g1-pbar" style="width:6%"></div></div>
-            <span id="g1-ptag" style="font-size:.65rem;padding:.15rem .5rem;border-radius:10px;background:var(--purple-bg);color:var(--purple);">concepto</span>
-          </div>
-          <div id="gslide1"></div>
+      </div>
+      <button class="card-toggle" id="toggle-vyv" onclick="toggleCard('vyv')">
+        <span>Ver guías de estudio</span>
+        <span class="toggle-arrow">▼</span>
+      </button>
+      <div class="card-expand" id="expand-vyv">
+        <div class="expand-label">Selecciona la guía</div>
+        <div class="guide-btns">
+          <a href="vyv/VyV_Estudio.html" class="guide-btn active-btn" style="background:linear-gradient(135deg,#7c3aed,#6366f1);border-color:#7c3aed">
+            📚 Guía Medio Curso
+            <span class="btn-badge">DISPONIBLE</span>
+          </a>
+          <span class="guide-btn disabled-btn">
+            📝 Guía Examen Ordinario
+            <span class="btn-badge">PRÓXIMAMENTE</span>
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- GLOSARIO T2: Modelos -->
-    <div class="page" id="page-glos2">
-      <div class="sec-title"><h2>Glosario · Tema 2</h2><span class="chip" id="g2-chip">Modelos de Desarrollo</span></div>
-      <div class="glos-layout">
-        <div class="glos-index">
-          <div class="glos-search-wrap"><input class="glos-search" id="gsearch2" placeholder="🔍 Buscar…" oninput="gSearch('g2')"></div>
-          <div class="glos-pills" id="gpills2">
-            <button class="gpill active" onclick="gTag('g2','all',this)">Todos</button>
-            <button class="gpill" onclick="gTag('g2','concepto',this)">Concepto</button>
-            <button class="gpill" onclick="gTag('g2','modelo',this)">Modelo</button>
-            <button class="gpill" onclick="gTag('g2','metodologia',this)">Metodología</button>
-            <button class="gpill" onclick="gTag('g2','proceso',this)">Proceso</button>
-          </div>
-          <div class="glos-list" id="glist2"></div>
-        </div>
-        <div class="glos-slide-wrap">
-          <div class="glos-progress">
-            <span id="g2-plab">1 / 16</span>
-            <div class="glos-prog-bar"><div class="glos-prog-fill" id="g2-pbar" style="width:6%"></div></div>
-            <span id="g2-ptag" style="font-size:.65rem;padding:.15rem .5rem;border-radius:10px;background:var(--purple-bg);color:var(--purple);">modelo</span>
-          </div>
-          <div id="gslide2"></div>
+    <!-- MATERIA 2: Automatización de Sistemas Dinámicos -->
+    <div class="card" id="card-auto">
+      <div class="card-stripe" style="background:linear-gradient(90deg,#0891b2,#06b6d4)"></div>
+      <div class="card-body">
+        <div class="card-ico">⚙️</div>
+        <div class="card-label">ITS · Grupo 003</div>
+        <div class="card-title">Automatización de Sistemas Dinámicos</div>
+        <div class="card-desc">Sistemas dinámicos, función de transferencia, Laplace, diagramas de bloques y tipos de controladores.</div>
+        <div class="card-tags">
+          <span class="tag" style="background:#e0f7fa;color:#0891b2;border-color:#a5f3fc">Laplace</span>
+          <span class="tag" style="background:#e0f7fa;color:#0891b2;border-color:#a5f3fc">Controladores</span>
+          <span class="tag" style="background:#e0f7fa;color:#0891b2;border-color:#a5f3fc">PID</span>
+          <span class="tag" style="background:#e0f7fa;color:#0891b2;border-color:#a5f3fc">FT</span>
         </div>
       </div>
-    </div>
-
-    <!-- GLOSARIO T3: CMM/CMMI -->
-    <div class="page" id="page-glos3">
-      <div class="sec-title"><h2>Glosario · Tema 3</h2><span class="chip" id="g3-chip">CMM / CMMI</span></div>
-      <div class="glos-layout">
-        <div class="glos-index">
-          <div class="glos-search-wrap"><input class="glos-search" id="gsearch3" placeholder="🔍 Buscar…" oninput="gSearch('g3')"></div>
-          <div class="glos-pills" id="gpills3">
-            <button class="gpill active" onclick="gTag('g3','all',this)">Todos</button>
-            <button class="gpill" onclick="gTag('g3','concepto',this)">Concepto</button>
-            <button class="gpill" onclick="gTag('g3','calidad',this)">Calidad</button>
-            <button class="gpill" onclick="gTag('g3','proceso',this)">Proceso</button>
-          </div>
-          <div class="glos-list" id="glist3"></div>
-        </div>
-        <div class="glos-slide-wrap">
-          <div class="glos-progress">
-            <span id="g3-plab">1 / 14</span>
-            <div class="glos-prog-bar"><div class="glos-prog-fill" id="g3-pbar" style="width:7%"></div></div>
-            <span id="g3-ptag" style="font-size:.65rem;padding:.15rem .5rem;border-radius:10px;background:var(--purple-bg);color:var(--purple);">calidad</span>
-          </div>
-          <div id="gslide3"></div>
+      <button class="card-toggle" id="toggle-auto" onclick="toggleCard('auto')">
+        <span>Ver guías de estudio</span>
+        <span class="toggle-arrow">▼</span>
+      </button>
+      <div class="card-expand" id="expand-auto">
+        <div class="expand-label">Selecciona la guía</div>
+        <div class="guide-btns">
+          <a href="auto/auto_mediocurso.html" class="guide-btn active-btn" style="background:linear-gradient(135deg,#0891b2,#06b6d4);border-color:#0891b2">
+            📚 Guía Medio Curso
+            <span class="btn-badge">DISPONIBLE</span>
+          </a>
+          <span class="guide-btn disabled-btn">
+            📝 Guía Examen Ordinario
+            <span class="btn-badge">PRÓXIMAMENTE</span>
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- QUIZ T1 -->
-    <div class="page" id="page-quiz1">
-      <div class="sec-title"><h2>Quiz · Tema 1</h2><span class="chip">20 preguntas</span></div>
-      <div class="qmeta"><span class="qchip">📚 Verificación, Validación, Software Web</span><span class="qchip">⏱ ~6 min</span></div>
-      <div id="q1-area"></div>
-    </div>
-
-    <!-- QUIZ T2 -->
-    <div class="page" id="page-quiz2">
-      <div class="sec-title"><h2>Quiz · Tema 2</h2><span class="chip">20 preguntas</span></div>
-      <div class="qmeta"><span class="qchip">📚 Modelos de Desarrollo · Cascada, Ágil, Scrum…</span><span class="qchip">⏱ ~6 min</span></div>
-      <div id="q2-area"></div>
-    </div>
-
-    <!-- QUIZ T3 -->
-    <div class="page" id="page-quiz3">
-      <div class="sec-title"><h2>Quiz · Tema 3</h2><span class="chip">20 preguntas</span></div>
-      <div class="qmeta"><span class="qchip">📚 CMM, CMMI, Calidad de Software</span><span class="qchip">⏱ ~6 min</span></div>
-      <div id="q3-area"></div>
-    </div>
-
-    <!-- COMPARATIVA MODELOS -->
-    <div class="page" id="page-modelos">
-      <div class="sec-title"><h2>Comparativa de Modelos</h2><span class="chip">Referencia Rápida</span></div>
-      <p style="font-size:.97rem;color:var(--muted);line-height:1.7;margin-bottom:1.75rem;max-width:640px">Cada modelo tiene sus <strong>fortalezas y limitaciones</strong>. Elige el correcto según el tipo de proyecto.</p>
-
-      <div class="steps-row" style="grid-template-columns:repeat(5,1fr);margin-bottom:1.5rem">
-        <div class="spill active" onclick="showModelo(0,this)"><span class="sn">1</span>Cascada</div>
-        <div class="spill" onclick="showModelo(1,this)"><span class="sn">2</span>Incremental</div>
-        <div class="spill" onclick="showModelo(2,this)"><span class="sn">3</span>Espiral</div>
-        <div class="spill" onclick="showModelo(3,this)"><span class="sn">4</span>Modelo en V</div>
-        <div class="spill" onclick="showModelo(4,this)"><span class="sn">5</span>Ágil/Scrum</div>
+    <!-- PLACEHOLDER: Agregar más materias aquí -->
+    <div class="card" style="opacity:.55;pointer-events:none">
+      <div class="card-stripe" style="background:linear-gradient(90deg,#94a3b8,#cbd5e1)"></div>
+      <div class="card-body">
+        <div class="card-ico">📦</div>
+        <div class="card-label">Próximamente</div>
+        <div class="card-title">Nueva Materia</div>
+        <div class="card-desc">Agrega aquí tu próxima materia. Duplica este bloque y personaliza el color, nombre y rutas de las guías.</div>
+        <div class="card-tags">
+          <span class="tag" style="background:#f1f5f9;color:#94a3b8;border-color:#e2e8f0">Próximamente</span>
+        </div>
       </div>
-      <div id="modelo-det-wrap" style="margin-bottom:2rem"></div>
-
-      <div class="slbl">Tabla comparativa rápida</div>
-      <div class="rtw">
-        <table class="rtbl">
-          <thead><tr><th>Modelo</th><th>Enfoque</th><th>¿Cuándo usarlo?</th><th>Limitación</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Cascada</strong></td><td>Secuencial, fases completas</td><td>Requisitos fijos desde el inicio (govt, industrial)</td><td>Muy rígido, sin retrocesos</td></tr>
-            <tr><td><strong>Incremental</strong></td><td>Entregas parciales funcionales</td><td>Cuando se quiere feedback temprano</td><td>Requiere arquitectura sólida desde inicio</td></tr>
-            <tr><td><strong>Espiral</strong></td><td>Basado en análisis de riesgos</td><td>Proyectos grandes y críticos</td><td>Complejo y costoso en proyectos pequeños</td></tr>
-            <tr><td><strong>Modelo en V</strong></td><td>Cada fase tiene su prueba</td><td>Automotriz, aeronáutica, médico</td><td>Tan rígido como cascada</td></tr>
-            <tr><td><strong>Ágil / Scrum</strong></td><td>Iteraciones cortas (sprints)</td><td>Entornos dinámicos con cambios frecuentes</td><td>Difícil escalar sin disciplina de equipo</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="ibox" style="margin-top:1.5rem"><h4>Fases del Modelo en Cascada</h4><ul>
-        <li>1. Análisis de Requisitos — ¿Qué necesita el sistema?</li>
-        <li>2. Diseño — Arquitectura y estructura del sistema</li>
-        <li>3. Implementación — Codificación</li>
-        <li>4. Pruebas — Verificación y Validación</li>
-        <li>5. Mantenimiento — Evolución y corrección post-entrega</li>
-      </ul></div>
-
-      <div class="ibox" style="margin-top:1rem"><h4>Roles en Scrum</h4><ul>
-        <li><strong>Product Owner</strong> — Define y prioriza el backlog del producto</li>
-        <li><strong>Scrum Master</strong> — Líder servicial, elimina impedimentos del equipo</li>
-        <li><strong>Development Team</strong> — Equipo autogestionado que ejecuta los sprints</li>
-      </ul></div>
+      <div style="padding:.9rem 1.5rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--muted2)">Sin guías disponibles aún</div>
     </div>
 
   </div>
-</main>
+</section>
+
+<footer class="footer">
+  EstudioHub · FIME UANL · Semestre Enero–Julio 2026 · Hecho para repasar y aprobar 🎓
+</footer>
 
 <script>
-// ════════════════════════════════════════════
-//  DATOS — GLOSARIO TEMA 1: V&V Básico
-// ════════════════════════════════════════════
-const GLOS1 = [
-  {name:'Verificación',tag:'concepto',icon:'✅',
-   def:'Proceso que comprueba que el software se <strong>construye correctamente</strong>, es decir, que cumple con los requisitos, estándares y especificaciones técnicas establecidas. Responde a la pregunta: <strong>"¿Estamos construyendo el software correctamente?"</strong>',
-   memo:'Verificar = revisar que cada ladrillo esté bien puesto conforme al plano.',
-   keys:['Especificaciones técnicas','Diseño y construcción','¿Bien construido?']},
-
-  {name:'Validación',tag:'concepto',icon:'🎯',
-   def:'Proceso que confirma que el software satisface las <strong>necesidades y expectativas reales del usuario</strong>. Se lleva a cabo mediante pruebas en condiciones reales o simuladas. Responde: <strong>"¿Estamos construyendo el software correcto?"</strong>',
-   memo:'Validar = preguntarle al cliente si la casa que construiste es realmente lo que quería.',
-   keys:['Necesidades del usuario','Pruebas','¿Correcto para el usuario?']},
-
-  {name:'V&V — Verificación y Validación',tag:'proceso',icon:'🔬',
-   def:'Conjunto de <strong>procesos para asegurar calidad y funcionamiento</strong> del software. Se aplican <strong>antes de la entrega final</strong> y de manera continua. Su objetivo es detectar defectos temprano, reducir riesgos y garantizar que el producto sea confiable y cumpla con lo esperado.',
-   memo:'V = ¿bien construido? + V = ¿correcto para el usuario? Los dos juntos = calidad garantizada.',
-   keys:['Calidad','Detección temprana','Confiabilidad','Riesgos']},
-
-  {name:'Crisis del Software',tag:'concepto',icon:'💥',
-   def:'Periodo de la historia (iniciado en <strong>1968</strong>) en que los proyectos informáticos presentaban constantes retrasos, sobrecostos y fallas graves por falta de métodos estructurados. Motivó el surgimiento formal de la <strong>ingeniería de software</strong>.',
-   memo:'1968: la crisis que forzó a tratar el software como una ingeniería real, no como magia.',
-   keys:['1968','Retrasos','Sobrecostos','Origen ingeniería de software']},
-
-  {name:'Ingeniería de Software',tag:'concepto',icon:'⚙️',
-   def:'Disciplina que aplica principios de ingeniería al <strong>desarrollo sistemático, controlado y eficiente</strong> de sistemas de software. Su objetivo es producir software confiable, mantenible, escalable y alineado con las necesidades del usuario.',
-   memo:'No es solo programar: es planificar, diseñar, verificar y mantener con método.',
-   keys:['Sistemático','Confiable','Mantenible','Escalable']},
-
-  {name:'Software Web',tag:'concepto',icon:'🌐',
-   def:'Software que se ejecuta en <strong>navegadores</strong>, es accesible desde múltiples dispositivos, soporta muchos usuarios simultáneos y depende de conectividad a Internet. Su arquitectura separa <strong>frontend</strong>, <strong>backend</strong> y servicios externos.',
-   memo:'Frontend = lo que ves. Backend = lo que procesa. API = el puente entre ambos.',
-   keys:['Navegador','Frontend','Backend','APIs','Escalabilidad']},
-
-  {name:'Frontend',tag:'concepto',icon:'🖥️',
-   def:'Capa del software web responsable de la <strong>interfaz y experiencia del usuario</strong>. Es lo que el usuario ve e interactúa directamente. Debe ser responsivo (funcionar en todos los dispositivos) y accesible.',
-   memo:'Frontend = la fachada y el interior visible de una tienda. Tú lo ves, lo tocas.',
-   keys:['Interfaz','UX','Diseño responsivo','Accesibilidad']},
-
-  {name:'Backend',tag:'concepto',icon:'🖧',
-   def:'Capa del software web que maneja la <strong>lógica de negocio, gestión de datos y procesamiento</strong>. El usuario no lo ve directamente pero depende de él para que todo funcione. Se comunica con el frontend mediante APIs.',
-   memo:'Backend = la cocina del restaurante. El cliente no la ve, pero sin ella no hay comida.',
-   keys:['Lógica de negocio','Base de datos','Procesamiento','API']},
-
-  {name:'API',tag:'concepto',icon:'🔌',
-   def:'<strong>Application Programming Interface</strong>: interfaz que permite la <strong>comunicación entre sistemas</strong>. En software web, conecta el frontend con el backend y con servicios externos. Facilita la <strong>interoperabilidad</strong> entre distintas plataformas.',
-   memo:'API = el mesero que lleva tu pedido (frontend) a la cocina (backend) y trae el resultado.',
-   keys:['Interoperabilidad','Comunicación','Servicios','HTTP']},
-
-  {name:'HTTPS / TLS',tag:'concepto',icon:'🔒',
-   def:'Protocolo seguro de comunicación web que <strong>cifra los datos</strong> en tránsito para proteger la privacidad e integridad de la información. Previene ataques de intercepción. Es el estándar de seguridad en la web moderna.',
-   memo:'HTTP sin "S" = postal abierta. HTTPS = carta sellada que solo el destinatario puede leer.',
-   keys:['Cifrado','Seguridad web','TLS','Privacidad']},
-
-  {name:'Inyección SQL',tag:'concepto',icon:'💉',
-   def:'Vulnerabilidad de seguridad en que un atacante inserta <strong>código SQL malicioso</strong> en entradas del sistema para manipular la base de datos, acceder a datos sensibles o destruirlos. Es una de las vulnerabilidades web más comunes.',
-   memo:'El atacante mete instrucciones SQL camufladas en un campo de texto para hackear la BD.',
-   keys:['Vulnerabilidad','Base de datos','OWASP','Seguridad']},
-
-  {name:'Diseño Responsivo',tag:'concepto',icon:'📱',
-   def:'Técnica de diseño web que garantiza que una aplicación <strong>funciona correctamente en todos los dispositivos</strong>: computadoras, tabletas y teléfonos móviles. Adapta el layout y tamaños automáticamente según la pantalla.',
-   memo:'Una sola app que "se dobla" para verse bien en cualquier pantalla.',
-   keys:['Móvil','Tableta','Adaptable','UX']},
-
-  {name:'Heterogeneidad Web',tag:'concepto',icon:'🌍',
-   def:'Característica del entorno web que implica una <strong>infraestructura variada</strong>: distintos navegadores, sistemas operativos, dispositivos, velocidades de conexión y tecnologías. El software web debe funcionar correctamente en todos estos contextos.',
-   memo:'El reto web: tu app debe funcionar igual en Chrome, Firefox, Safari, Android e iOS.',
-   keys:['Infraestructura variada','Navegadores','Compatibilidad']},
-
-  {name:'Escalabilidad',tag:'concepto',icon:'📈',
-   def:'Capacidad de un sistema de <strong>crecer para manejar mayor carga</strong> sin degradar su rendimiento. Puede ser <strong>horizontal</strong> (agregar más servidores) o <strong>vertical</strong> (más potencia al servidor existente).',
-   memo:'Horizontal = más cajeros. Vertical = un cajero más rápido.',
-   keys:['Horizontal','Vertical','Rendimiento','Carga']},
-
-  {name:'Mantenimiento de Software',tag:'proceso',icon:'🔧',
-   def:'Fase final del ciclo de vida del software que garantiza su <strong>funcionamiento continuo y adaptación a cambios</strong> tras el despliegue. Suele representar el <strong>mayor costo a largo plazo</strong> del ciclo de vida.',
-   memo:'El software nunca "termina": siempre hay nuevas tecnologías, bugs y necesidades.',
-   keys:['Ciclo de vida','Mayor costo','Adaptación','Bugs']},
-
-  {name:'Pruebas de Software',tag:'proceso',icon:'🧪',
-   def:'Proceso de <strong>verificar y validar</strong> que el software funcione correctamente. Tipos principales: <strong>unitarias</strong> (componentes individuales), <strong>de integración</strong> (interacción entre módulos), <strong>de sistema</strong> (el conjunto) y <strong>de aceptación</strong> (con el usuario final).',
-   memo:'Unit = una pieza. Integración = piezas juntas. Sistema = todo el producto. Aceptación = el cliente aprueba.',
-   keys:['Unitarias','Integración','Sistema','Aceptación']},
-
-  {name:'CI/CD',tag:'proceso',icon:'🚀',
-   def:'<strong>Integración Continua / Despliegue Continuo</strong>: prácticas que <strong>automatizan pruebas y entrega</strong> del software. Permiten detectar errores rápidamente, reducir errores humanos y acelerar los ciclos de desarrollo.',
-   memo:'CI/CD = un robot que prueba y publica tu código cada vez que haces un cambio.',
-   keys:['Automatización','Integración continua','Entrega continua','DevOps']},
-
-  {name:'Experiencia de Usuario (UX)',tag:'concepto',icon:'😊',
-   def:'Conjunto de factores que determinan <strong>qué tan satisfactoria es la interacción</strong> del usuario con el software. Incluye tiempos de carga, accesibilidad, diseño intuitivo, fluidez y retroalimentación visual. Es parte esencial de la calidad del software web.',
-   memo:'Un software funcionalmente perfecto pero difícil de usar = mal software.',
-   keys:['Satisfacción','Usabilidad','Accesibilidad','Fluidez']},
-];
-
-// ════════════════════════════════════════════
-//  DATOS — GLOSARIO TEMA 2: Modelos de Desarrollo
-// ════════════════════════════════════════════
-const GLOS2 = [
-  {name:'Ciclo de Vida del Software (SDLC)',tag:'concepto',icon:'🔄',
-   def:'Conjunto estructurado de etapas para el desarrollo de software: <strong>Análisis de requisitos → Diseño → Implementación → Pruebas → Despliegue → Mantenimiento</strong>. Permite organizar y controlar el proceso de creación de un sistema.',
-   memo:'SDLC = el recetario completo para cocinar software: desde los ingredientes hasta servir el plato.',
-   keys:['Fases','Estructurado','Requisitos','Despliegue']},
-
-  {name:'Modelo en Cascada',tag:'modelo',icon:'🌊',
-   def:'Modelo <strong>secuencial</strong> donde cada fase debe completarse antes de iniciar la siguiente: Análisis → Diseño → Implementación → Pruebas → Mantenimiento. Simple y fácil de entender pero <strong>rígido</strong>, no contempla retrocesos.',
-   memo:'Como una cascada de agua: fluye hacia abajo y no puede volver arriba.',
-   keys:['Secuencial','Rígido','Fases completas','Requisitos fijos']},
-
-  {name:'Modelo Incremental',tag:'modelo',icon:'📦',
-   def:'Divide el sistema en <strong>partes funcionales (incrementos)</strong> que se desarrollan y entregan progresivamente. Permite retroalimentación temprana y reduce riesgos. Requiere una <strong>arquitectura bien definida</strong> desde el inicio.',
-   memo:'Como construir un edificio piso por piso y entregar cada piso terminado.',
-   keys:['Incrementos','Entregas parciales','Retroalimentación','Riesgo reducido']},
-
-  {name:'Modelo en Espiral',tag:'modelo',icon:'🌀',
-   def:'Modelo propuesto por <strong>Barry Boehm</strong> que combina desarrollo iterativo con <strong>gestión de riesgos</strong>. Cada ciclo incluye: Planificación → Análisis de riesgos → Desarrollo → Evaluación. Ideal para proyectos grandes y críticos.',
-   memo:'La espiral da vueltas mejorando con cada ciclo. Nunca termina hasta que sea perfecto.',
-   keys:['Barry Boehm','Riesgos','Iterativo','Proyectos críticos']},
-
-  {name:'Modelo en V',tag:'modelo',icon:'✔️',
-   def:'Evolución del modelo en cascada que <strong>asocia cada fase de desarrollo con su fase de prueba</strong>. El lado izquierdo son fases de desarrollo y el derecho las pruebas correspondientes. Muy usado en automotriz, aeronáutica y medicina.',
-   memo:'La V: subes por la derecha verificando todo lo que bajaste construyendo por la izquierda.',
-   keys:['Verificación por fases','Automotriz','Aeronáutica','Seguridad crítica']},
-
-  {name:'Metodologías Ágiles',tag:'metodologia',icon:'⚡',
-   def:'Enfoque de desarrollo que prioriza <strong>colaboración, adaptación al cambio y entrega continua</strong> de software funcional. Surge del <strong>Manifiesto Ágil (2001)</strong>. Ideal para entornos dinámicos con requisitos cambiantes.',
-   memo:'Ágil = el equipo puede girar rápido. El cliente ve resultados cada pocas semanas.',
-   keys:['Manifiesto Ágil 2001','Iterativo','Flexible','Entrega continua']},
-
-  {name:'Scrum',tag:'metodologia',icon:'🏉',
-   def:'Metodología ágil que organiza el trabajo en iteraciones cortas llamadas <strong>sprints</strong> (típicamente 2-4 semanas). Roles clave: <strong>Product Owner</strong>, <strong>Scrum Master</strong> y equipo de desarrollo. Tiene eventos: Sprint Planning, Daily, Review, Retrospective.',
-   memo:'Scrum = fútbol americano del software: el equipo carga junto el balón en sprints cortos.',
-   keys:['Sprint','Product Owner','Scrum Master','Daily Standup']},
-
-  {name:'Sprint',tag:'metodologia',icon:'🏃',
-   def:'<strong>Iteración corta</strong> en Scrum (2-4 semanas) donde el equipo desarrolla un incremento funcional del producto. Al final de cada sprint se entrega software funcional y se revisa con el Product Owner.',
-   memo:'Sprint = una carrera corta con meta clara. Al terminar: algo funciona y se puede mostrar.',
-   keys:['Iteración','2-4 semanas','Incremento','Entrega funcional']},
-
-  {name:'Sprint Backlog',tag:'metodologia',icon:'📋',
-   def:'<strong>Plan táctico para la iteración actual</strong>. Lista de tareas específicas seleccionadas del Product Backlog para completar durante un sprint. Lo define el equipo de desarrollo en el Sprint Planning.',
-   memo:'Product Backlog = todo lo que queda por hacer. Sprint Backlog = lo que haremos ESTA semana.',
-   keys:['Sprint Planning','Tareas','Iteración actual','Equipo']},
-
-  {name:'Scrum Master',tag:'metodologia',icon:'🧑‍💼',
-   def:'<strong>Líder servicial</strong> en Scrum. No es el jefe del equipo: facilita el proceso, elimina impedimentos que bloquean al equipo y asegura que se sigan las prácticas de Scrum. Protege al equipo de interrupciones externas.',
-   memo:'El Scrum Master es el árbitro que mantiene el juego limpio y desbloquea al equipo.',
-   keys:['Líder servicial','Elimina impedimentos','Facilita','No es jefe']},
-
-  {name:'Kanban',tag:'metodologia',icon:'📌',
-   def:'Metodología ágil que se enfoca en la <strong>visualización del flujo de trabajo</strong> usando un tablero con columnas (Por hacer / En progreso / Terminado). Limita el trabajo en progreso para aumentar eficiencia y detectar cuellos de botella.',
-   memo:'Kanban = el tablero de post-its del equipo. Ves exactamente qué está atorado.',
-   keys:['Flujo de trabajo','Tablero','WIP Limit','Visual']},
-
-  {name:'Extreme Programming (XP)',tag:'metodologia',icon:'💻',
-   def:'Metodología ágil que promueve prácticas técnicas extremas: <strong>programación en pareja</strong>, <strong>TDD (desarrollo guiado por pruebas)</strong>, integración continua y refactoring constante. Ideal para equipos pequeños con alta incertidumbre.',
-   memo:'XP = dos programadores, un teclado, pruebas antes del código. Calidad máxima.',
-   keys:['Pair programming','TDD','Refactoring','Integración continua']},
-
-  {name:'Requisitos Funcionales',tag:'concepto',icon:'⚙️',
-   def:'Describen <strong>lo que el sistema debe hacer</strong>: funciones, comportamientos y operaciones específicas. Por ejemplo: "El sistema debe permitir iniciar sesión con usuario y contraseña". Son las funcionalidades concretas del software.',
-   memo:'Funcional = las funciones que el usuario puede usar directamente.',
-   keys:['Funciones','Comportamiento','¿Qué hace?']},
-
-  {name:'Requisitos No Funcionales',tag:'concepto',icon:'📐',
-   def:'Establecen <strong>características de calidad</strong> del sistema: rendimiento, seguridad, usabilidad, confiabilidad, portabilidad. No describen qué hace el sistema sino <strong>cómo debe comportarse</strong>.',
-   memo:'No funcional = la calidad invisible: ¿qué tan rápido? ¿qué tan seguro? ¿qué tan fácil?',
-   keys:['Calidad','Rendimiento','Seguridad','Usabilidad','Portabilidad']},
-
-  {name:'UML — Lenguaje Unificado de Modelado',tag:'concepto',icon:'📊',
-   def:'Lenguaje estándar para <strong>representar gráficamente</strong> la estructura y comportamiento de un sistema. Incluye diagramas de: casos de uso, clases, secuencia y actividades. Mejora la comunicación entre desarrolladores y clientes.',
-   memo:'UML = el idioma visual del software. Un diagrama vale más que mil líneas de código.',
-   keys:['Diagramas','Casos de uso','Clases','Secuencia','Estándar']},
-
-  {name:'COCOMO',tag:'modelo',icon:'📉',
-   def:'Modelo de estimación de costos de software (<strong>Constructive Cost Model</strong>) que permite calcular el <strong>esfuerzo, tiempo y costo</strong> de desarrollo basándose en el tamaño del software (líneas de código o puntos de función).',
-   memo:'COCOMO = la calculadora del gerente de proyecto: ¿cuánto cuesta hacer esto?',
-   keys:['Estimación','Costo','Esfuerzo','Tamaño del proyecto']},
-];
-
-// ════════════════════════════════════════════
-//  DATOS — GLOSARIO TEMA 3: CMM / CMMI
-// ════════════════════════════════════════════
-const GLOS3 = [
-  {name:'Calidad de Software',tag:'calidad',icon:'⭐',
-   def:'Conjunto de características que determinan el <strong>grado en que un producto satisface las necesidades del usuario</strong> y cumple los requisitos establecidos. Incluye atributos funcionales y no funcionales como eficiencia, seguridad y confiabilidad. Es <strong>multidimensional</strong>.',
-   memo:'La calidad no es solo "que funcione": es rápido, seguro, fácil de usar Y funcional.',
-   keys:['Multidimensional','Funcional','No funcional','Satisfacción']},
-
-  {name:'Modelo de Calidad de Software',tag:'calidad',icon:'📐',
-   def:'<strong>Conjunto de buenas prácticas</strong> para el ciclo de vida del software que permiten medir y evaluar objetivamente la calidad. Surgieron para reducir la brecha entre usuarios y desarrolladores. Entre los más conocidos: <strong>McCall, ISO 15504 y CMM</strong>.',
-   memo:'El modelo de calidad es el manual de buenas prácticas: si lo sigues, el resultado es mejor.',
-   keys:['Buenas prácticas','McCall','ISO 15504','CMM','Evaluación']},
-
-  {name:'CMM — Modelo de Madurez de Capacidades',tag:'calidad',icon:'🏛️',
-   def:'Marco creado en <strong>1986 por el SEI (Carnegie Mellon) con MITRE</strong>. Se usa para analizar el enfoque y técnicas que sigue una organización para desarrollar software. Describe 5 niveles de madurez del proceso. Fue creado en respuesta al gobierno de EE.UU.',
-   memo:'CMM = el termómetro de madurez del desarrollo de software. Más alto = más maduro.',
-   keys:['1986','SEI','Carnegie Mellon','5 niveles','MITRE']},
-
-  {name:'Nivel 1 CMM — Inicial',tag:'proceso',icon:'🌱',
-   def:'Los procesos son <strong>improvisados y caóticos</strong>. La organización carece de entorno estable, lo que genera resultados impredecibles. No hay prácticas consistentes de gestión de proyectos. Los beneficios de buenas prácticas son socavados por mala planificación.',
-   memo:'Nivel 1 = el equipo improvisa todo. Cada proyecto es un caos diferente.',
-   keys:['Improvisado','Caótico','Impredecible','Sin gestión']},
-
-  {name:'Nivel 2 CMM — Gestionado',tag:'proceso',icon:'📋',
-   def:'Se establecen los <strong>procesos básicos de gestión de proyectos</strong> para controlar costos, cronograma y funcionalidad. Permite replicar prácticas exitosas de proyectos anteriores, aunque los procesos específicos pueden diferir entre proyectos.',
-   memo:'Nivel 2 = hay un plan y se siguen. Ya no improvisamos, aunque cada proyecto puede variar.',
-   keys:['Gestión básica','Costos','Cronograma','Replicable']},
-
-  {name:'Nivel 3 CMM — Definido',tag:'proceso',icon:'📝',
-   def:'Los procesos estándar están <strong>documentados e integrados</strong> en un conjunto coherente. Los procesos se adaptan para cada proyecto. Ayuda a gerentes y equipos a lograr rendimiento más eficaz. Aquí aparece V&V en CMMI-DEV.',
-   memo:'Nivel 3 = hay un manual oficial de cómo trabajamos y todos lo siguen.',
-   keys:['Documentado','Estándar','V&V en CMMI','Integrado']},
-
-  {name:'Nivel 4 CMM — Cuantitativamente Gestionado',tag:'proceso',icon:'📊',
-   def:'La organización controla sus procesos mediante <strong>métricas cuantitativas y análisis estadístico</strong>. Se establecen objetivos medibles de calidad y productividad. Las decisiones se basan en evidencia objetiva, reduciendo variabilidad.',
-   memo:'Nivel 4 = medimos todo con números. Los datos mandan, no las corazonadas.',
-   keys:['Métricas','Estadísticas','Objetivos medibles','Evidencia objetiva']},
-
-  {name:'Nivel 5 CMM — Optimizado',tag:'proceso',icon:'🚀',
-   def:'La organización se enfoca en la <strong>mejora continua</strong>. Analiza sistemáticamente causas de defectos para prevenirlos. Usa métricas históricas, análisis de causa raíz e innovación. Cultura proactiva orientada al perfeccionamiento constante.',
-   memo:'Nivel 5 = no solo resolvemos problemas: aprendemos a evitar que ocurran.',
-   keys:['Mejora continua','Causa raíz','Innovación','Prevención']},
-
-  {name:'CMMI — Integración de Madurez de Capacidades',tag:'calidad',icon:'🔗',
-   def:'Evolución del CMM que <strong>integra diferentes modelos</strong> (Software CMM, Systems Engineering CMM, People CMM) en un único marco coherente. Elimina duplicaciones e inconsistencias. Define qué procesos gestionar pero deja libertad de cómo implementarlos.',
-   memo:'CMMI = todos los CMM fusionados en uno solo, más flexible y completo.',
-   keys:['Integración','SEI','Marco único','Flexible','Escalable']},
-
-  {name:'Representación por Etapas (Staged)',tag:'calidad',icon:'📈',
-   def:'Enfoque del CMMI basado en <strong>niveles de madurez secuenciales</strong> (1-5). Permite evaluar la madurez global de la organización. Para pasar al siguiente nivel deben cumplirse todas las áreas de proceso del nivel actual.',
-   memo:'Staged = escalera de niveles. Para subir al 3 debes haber completado el 2.',
-   keys:['Secuencial','Niveles 1-5','Madurez global','Staged']},
-
-  {name:'Representación Continua (Continuous)',tag:'calidad',icon:'🔁',
-   def:'Enfoque del CMMI que permite evaluar y mejorar <strong>áreas de proceso específicas de manera independiente</strong>, sin seguir estrictamente los niveles de madurez. Proporciona mayor flexibilidad en la adopción del modelo.',
-   memo:'Continuous = menú a la carta. Mejoras lo que necesitas, cuando lo necesitas.',
-   keys:['Independiente','Flexible','Áreas de proceso','Sin secuencia obligatoria']},
-
-  {name:'Relación CMMI + V&V',tag:'proceso',icon:'🤝',
-   def:'En CMMI-DEV, la <strong>Verificación y Validación aparecen como áreas de proceso clave en el Nivel 3</strong>. Combinarlos reduce defectos entre <strong>20% y 50%</strong>, baja costos al detectar errores temprano y mejora la predictibilidad de entregas.',
-   memo:'CMMI + V&V = el duo de calidad. Uno define el proceso, el otro lo verifica a cada paso.',
-   keys:['Nivel 3 CMMI-DEV','20-50% menos defectos','Detección temprana','Madurez']},
-
-  {name:'Calidad de Proceso',tag:'calidad',icon:'⚙️',
-   def:'Nivel de calidad que se enfoca en que <strong>cada etapa del ciclo de vida</strong> del software se lleve a cabo correctamente. Garantiza que el proceso de desarrollo es ordenado, controlado y mejora continuamente.',
-   memo:'No importa solo el resultado: el camino también debe ser de calidad.',
-   keys:['Proceso','Ciclo de vida','Etapas','Control']},
-
-  {name:'Calidad de Producto',tag:'calidad',icon:'📦',
-   def:'Evaluación de la calidad a través de la <strong>revisión, transición y operación del producto</strong> de software. Mide si el producto final cumple con los atributos de calidad definidos: funcionalidad, eficiencia, fiabilidad, usabilidad y más.',
-   memo:'Calidad del producto = el examen final del software: ¿qué tan bueno salió?',
-   keys:['Revisión','Operación','Atributos de calidad','Producto final']},
-];
-
-// ════════════════════════════════
-//  DATOS — QUIZ TEMA 1
-// ════════════════════════════════
-const Q1 = [
-  {q:'¿Cuáles son los procesos para asegurar calidad y funcionamiento del software?',opts:['La verificación y validación','El diseño y la implementación','El mantenimiento y las pruebas','El análisis y el despliegue'],ans:0,exp:'V&V son los dos procesos fundamentales para asegurar calidad y funcionamiento del software.'},
-  {q:'¿Cuándo se aplican los procesos de verificación y validación?',opts:['Solo al inicio del proyecto','Solo al final del proyecto','Antes de la entrega final y de manera continua','Solo durante las pruebas finales'],ans:2,exp:'V&V se aplican antes de la entrega final y de manera continua a lo largo del desarrollo.'},
-  {q:'¿En qué se centra la verificación?',opts:['En satisfacer al usuario','En cumplir especificaciones técnicas','En realizar pruebas con usuarios','En reducir costos'],ans:1,exp:'La verificación se centra en comprobar que el sistema cumple con los requisitos y especificaciones técnicas.'},
-  {q:'¿Cuándo se realiza principalmente la verificación?',opts:['Al final del proyecto','Con el usuario final','Durante el diseño y construcción','Solo en mantenimiento'],ans:2,exp:'La verificación se realiza durante el diseño y construcción para asegurar que se construye correctamente.'},
-  {q:'¿Cuál es el objetivo principal de la validación?',opts:['Cumplir especificaciones técnicas','Satisfacer al usuario','Documentar el sistema','Reducir el tiempo de desarrollo'],ans:1,exp:'La validación tiene como objetivo confirmar que el producto satisface las necesidades y expectativas del usuario.'},
-  {q:'¿Cómo se lleva a cabo la validación?',opts:['Mediante revisión de código','Mediante pruebas','Mediante documentación','Mediante diagramas UML'],ans:1,exp:'La validación se lleva a cabo mediante pruebas en condiciones reales o simuladas.'},
-  {q:'¿Qué pregunta responde la validación?',opts:['¿Estamos construyendo el software correctamente?','¿Estamos construyendo el software correcto?','¿Cuánto cuesta el software?','¿Qué tecnología usar?'],ans:1,exp:'La validación responde: "¿Estamos construyendo el software correcto?" (lo que el usuario necesita).'},
-  {q:'¿Qué pregunta responde la verificación?',opts:['¿Estamos construyendo el software correcto?','¿Estamos construyendo el software correctamente?','¿Es el software rentable?','¿Quién usará el software?'],ans:1,exp:'La verificación responde: "¿Estamos construyendo el software correctamente?" (conforme a especificaciones).'},
-  {q:'¿Cuándo se propuso formalmente el término "ingeniería de software"?',opts:['1960','1968','1975','1980'],ans:1,exp:'El término ingeniería de software se propuso en 1968, durante la famosa conferencia de la NATO, como respuesta a la crisis del software.'},
-  {q:'¿Qué originó la crisis del software?',opts:['La falta de internet','Sistemas complejos y poco confiables por falta de métodos','El alto costo del hardware','La competencia entre empresas'],ans:1,exp:'La crisis del software surgió por sistemas complejos y poco confiables causados por la falta de métodos estructurados de desarrollo.'},
-  {q:'¿Qué implica el diseño responsivo en aplicaciones web?',opts:['Responder rápido a consultas','Funcionar correctamente en todos los dispositivos','Usar colores llamativos','Reducir el tamaño del código'],ans:1,exp:'El diseño responsivo implica que la aplicación funciona y se adapta correctamente en computadoras, tabletas y móviles.'},
-  {q:'¿Qué es la heterogeneidad en el contexto del software web?',opts:['Muchos usuarios simultáneos','Infraestructura variada: distintos navegadores, dispositivos y sistemas','Alta velocidad de procesamiento','Uso de múltiples lenguajes de programación'],ans:1,exp:'La heterogeneidad web se refiere a la infraestructura variada: distintos navegadores, sistemas operativos, dispositivos y velocidades de conexión.'},
-  {q:'¿Qué protocolo de seguridad usa la web moderna para cifrar datos en tránsito?',opts:['HTTP','FTP','HTTPS/TLS','SSH'],ans:2,exp:'HTTPS con TLS (Transport Layer Security) cifra los datos en tránsito, protegiéndolos de intercepciones.'},
-  {q:'¿Cuál es la característica principal del software web respecto a su arquitectura?',opts:['Solo tiene backend','Separa frontend, backend y servicios externos','Solo funciona en un dispositivo','No necesita base de datos'],ans:1,exp:'La arquitectura del software web divide responsabilidades en frontend (UI), backend (lógica) y servicios externos (APIs).'},
-  {q:'¿Qué tipo de prueba verifica que los componentes individuales funcionan correctamente?',opts:['Prueba de aceptación','Prueba de integración','Prueba unitaria','Prueba de sistema'],ans:2,exp:'Las pruebas unitarias verifican el correcto funcionamiento de componentes o módulos individuales del software.'},
-  {q:'¿Qué genera detectar errores tarde en el desarrollo de software?',opts:['Mejor calidad del producto','Altos costos y retrasos','Mayor satisfacción del cliente','Más funcionalidades'],ans:1,exp:'Los errores detectados tarde generan altos costos de corrección y retrasos, ya que son más difíciles de remediar.'},
-  {q:'¿Qué significa CI/CD en desarrollo de software?',opts:['Control Interno / Control Directo','Código Iterativo / Código Dinámico','Integración Continua / Despliegue Continuo','Código Incremental / Código Distribuido'],ans:2,exp:'CI/CD = Integración Continua / Despliegue Continuo. Automatiza pruebas y entrega para reducir errores y acelerar el desarrollo.'},
-  {q:'¿Qué característica del software lo diferencia del hardware?',opts:['El software es más caro','El software es intangible','El software no necesita mantenimiento','El software nunca falla'],ans:1,exp:'El software es intangible: no se puede tocar físicamente, a diferencia del hardware.'},
-  {q:'¿Qué es UX (experiencia de usuario)?',opts:['El lenguaje de programación usado','El tiempo de compilación del código','La satisfacción e interacción del usuario con el software','El número de funcionalidades del sistema'],ans:2,exp:'UX es el conjunto de factores que determinan qué tan satisfactoria es la interacción del usuario: usabilidad, accesibilidad, fluidez y diseño.'},
-  {q:'¿Qué protocolo utiliza la web para la comunicación entre cliente y servidor?',opts:['FTP','SSH','HTTP','SMTP'],ans:2,exp:'La web usa el protocolo HTTP (Hypertext Transfer Protocol) para la comunicación entre clientes (navegadores) y servidores.'},
-];
-
-// ════════════════════════════════
-//  DATOS — QUIZ TEMA 2
-// ════════════════════════════════
-const Q2 = [
-  {q:'¿Cuál es el modelo de desarrollo secuencial tradicional?',opts:['Espiral','Ágil','Cascada','Incremental'],ans:2,exp:'El modelo en Cascada es el modelo secuencial tradicional donde cada fase debe completarse antes de iniciar la siguiente.'},
-  {q:'¿Qué modelo de desarrollo está basado en análisis de riesgos?',opts:['Cascada','Espiral','Incremental','Kanban'],ans:1,exp:'El modelo en Espiral, propuesto por Barry Boehm, está basado en el análisis de riesgos en cada ciclo.'},
-  {q:'¿Qué modelo divide el sistema en partes funcionales entregadas progresivamente?',opts:['Cascada','Modelo en V','Incremental','Scrum'],ans:2,exp:'El modelo Incremental divide el sistema en incrementos (partes funcionales) que se desarrollan y entregan de forma progresiva.'},
-  {q:'¿Cuál es la metodología ágil más conocida?',opts:['XP','Kanban','Scrum','Cascada'],ans:2,exp:'Scrum es la metodología ágil más ampliamente utilizada, organizando el trabajo en sprints con roles definidos.'},
-  {q:'¿Cómo se llama la iteración corta en Scrum?',opts:['Ciclo','Fase','Sprint','Incremento'],ans:2,exp:'En Scrum, la iteración corta (2-4 semanas) se llama Sprint, al final del cual se entrega software funcional.'},
-  {q:'¿Qué lenguaje estándar se usa para modelar sistemas gráficamente?',opts:['UML','HTML','SQL','JSON'],ans:0,exp:'UML (Lenguaje Unificado de Modelado) es el estándar para representar gráficamente la estructura y comportamiento de sistemas.'},
-  {q:'¿Cuál es el documento inicial que define las necesidades del proyecto?',opts:['Manual de usuario','Diagrama de clases','Documento de Requisitos','Sprint Backlog'],ans:2,exp:'El documento de Requisitos es el documento inicial que identifica y describe las necesidades del cliente para el sistema.'},
-  {q:'¿Cuál es la fase final del ciclo de vida del software?',opts:['Diseño','Implementación','Pruebas','Mantenimiento'],ans:3,exp:'El Mantenimiento es la fase final del SDLC, y suele ser la más costosa a largo plazo.'},
-  {q:'¿Cómo se llaman las partes funcionales pequeñas del modelo incremental?',opts:['Sprints','Módulos','Incrementos','Fases'],ans:2,exp:'En el modelo incremental, las partes funcionales pequeñas y manejables que se entregan progresivamente se llaman Incrementos.'},
-  {q:'¿Qué es el Sprint Backlog?',opts:['La lista completa de funciones del producto','El plan táctico para la iteración actual','El registro de bugs del sistema','El contrato con el cliente'],ans:1,exp:'El Sprint Backlog es el plan táctico para la iteración actual: las tareas específicas seleccionadas para completar en ese sprint.'},
-  {q:'¿Quién es el líder servicial en Scrum que elimina impedimentos?',opts:['Product Owner','Developer','Scrum Master','Project Manager'],ans:2,exp:'El Scrum Master es el líder servicial que facilita el proceso y elimina los impedimentos que bloquean al equipo.'},
-  {q:'¿Cuáles son las 3 ventajas del modelo incremental?',opts:['Bajo costo, rapidez y simplicidad','Retroalimentación del cliente, gestión de riesgo y verificación continua','Documentación completa, requisitos fijos y bajo mantenimiento','Sin errores, entrega única y proceso simple'],ans:1,exp:'Las tres ventajas del modelo incremental son: retroalimentación del cliente, gestión de riesgo y verificación continua.'},
-  {q:'¿En qué año se firmó el Manifiesto Ágil?',opts:['1995','1999','2001','2005'],ans:2,exp:'El Manifiesto Ágil se firmó en 2001 y estableció los valores y principios de las metodologías ágiles.'},
-  {q:'¿Qué tipo de requisito describe "el sistema debe responder en menos de 2 segundos"?',opts:['Funcional','No funcional','De negocio','De usuario'],ans:1,exp:'El tiempo de respuesta es un atributo de calidad, por lo que es un requisito No Funcional (rendimiento).'},
-  {q:'¿En qué industrias se usa especialmente el Modelo en V?',opts:['Marketing y ventas','Automotriz, aeronáutica y medicina','Entretenimiento y videojuegos','Comercio electrónico'],ans:1,exp:'El Modelo en V se usa ampliamente en automotriz, aeronáutica y medicina por su enfoque riguroso en V&V.'},
-  {q:'¿Quién propuso el modelo en Espiral?',opts:['Edsger Dijkstra','Barry Boehm','Alan Turing','Watts Humphrey'],ans:1,exp:'El modelo en Espiral fue propuesto por Barry Boehm como un modelo iterativo con énfasis en gestión de riesgos.'},
-  {q:'¿Para qué sirven los diagramas UML de casos de uso?',opts:['Mostrar la arquitectura del servidor','Describir interacciones entre usuarios y el sistema','Calcular el costo del proyecto','Documentar el código fuente'],ans:1,exp:'Los diagramas de casos de uso UML describen las interacciones entre los actores (usuarios) y el sistema.'},
-  {q:'¿Cuál es la principal limitación del modelo en Cascada?',opts:['Es muy costoso','Es muy rígido y no permite cambios fácilmente','Es difícil de entender','Requiere demasiados programadores'],ans:1,exp:'La principal limitación del modelo en Cascada es su rigidez: no contempla retrocesos ni cambios de requisitos.'},
-  {q:'¿Qué metodología ágil usa un tablero para visualizar el flujo de trabajo?',opts:['Scrum','XP','Kanban','SAFe'],ans:2,exp:'Kanban utiliza un tablero visual con columnas (Por hacer / En progreso / Terminado) para gestionar el flujo de trabajo.'},
-  {q:'¿Cuál es el enfoque principal de Extreme Programming (XP)?',opts:['Gestión de proyectos a gran escala','Prácticas técnicas como programación en pareja y TDD','Entrega de software sin documentación','Planificación anual del proyecto'],ans:1,exp:'XP se enfoca en prácticas técnicas extremas: programación en pareja, TDD (desarrollo guiado por pruebas) y refactoring constante.'},
-];
-
-// ════════════════════════════════
-//  DATOS — QUIZ TEMA 3
-// ════════════════════════════════
-const Q3 = [
-  {q:'¿Qué representan los niveles CMM?',opts:['Las fases del ciclo de vida del software','Un mayor grado de capacidad y sofisticación del proceso','Los tipos de pruebas de software','Las etapas del modelo en cascada'],ans:1,exp:'Los niveles CMM representan un mayor grado de capacidad y sofisticación del proceso de desarrollo.'},
-  {q:'¿Para qué son útiles los niveles CMM?',opts:['Para calcular el costo del software','Para evaluar y mejorar la eficacia de los procesos de software dentro de una organización','Para diseñar interfaces gráficas','Para elegir el lenguaje de programación'],ans:1,exp:'Los niveles CMM son útiles para evaluar y mejorar la eficacia de los procesos de software dentro de una organización.'},
-  {q:'¿En qué nivel de CMM los procesos son improvisados y caóticos?',opts:['Nivel 5','Nivel 3','Nivel 2','Nivel 1 — Inicial'],ans:3,exp:'En el Nivel 1 (Inicial), los procesos tienen como característica principal el ser improvisados y caóticos.'},
-  {q:'¿Qué se establece en el Nivel 2 de CMM?',opts:['Mejora continua de procesos','Control estadístico','Procesos básicos de gestión de proyectos','Optimización de procesos'],ans:2,exp:'En el Nivel 2 (Gestionado) se establecen los procesos básicos de gestión de proyectos para controlar costos, cronograma y funcionalidad.'},
-  {q:'¿Cuándo se originó el CMM?',opts:['1980','1986','1990','2001'],ans:1,exp:'El CMM se originó en 1986, cuando el SEI de Carnegie Mellon comenzó a desarrollar la estructura de madurez de procesos.'},
-  {q:'¿Qué afecta directamente a la experiencia del usuario y credibilidad de la empresa?',opts:['El costo del hardware','La calidad del software','El número de programadores','La velocidad del internet'],ans:1,exp:'La calidad del software afecta directamente la experiencia del usuario y los resultados/credibilidad de la empresa.'},
-  {q:'¿Qué es un modelo de calidad de software?',opts:['Una metodología de programación','Un conjunto de buenas prácticas para el ciclo de vida del software','Un sistema de gestión de bases de datos','Un protocolo de comunicación'],ans:1,exp:'Un modelo de calidad de software es un conjunto de buenas prácticas para el ciclo de vida del software, enfocadas en gestión y desarrollo.'},
-  {q:'¿Qué modelo surge para integrar y unificar diferentes modelos de madurez existentes?',opts:['CMM','ISO 9001','CMMI','McCall'],ans:2,exp:'CMMI (Capability Maturity Model Integration) surge para integrar los modelos CMM de Software, Sistemas y Personas en uno solo.'},
-  {q:'¿Qué representación del CMMI permite mejorar áreas de proceso de manera independiente?',opts:['Representación por etapas','Representación jerárquica','Representación secuencial','Representación continua'],ans:3,exp:'La Representación Continua del CMMI permite evaluar y mejorar áreas de proceso específicas de manera independiente.'},
-  {q:'¿En qué nivel de CMMI-DEV aparecen la Verificación y Validación como áreas de proceso?',opts:['Nivel 1','Nivel 2','Nivel 3','Nivel 5'],ans:2,exp:'En CMMI-DEV, V&V aparecen como áreas de proceso clave en el Nivel 3 (Definido).'},
-  {q:'¿Cuál es el beneficio clave de combinar CMMI con V&V?',opts:['Mayor velocidad de programación','Reducción de defectos entre 20% y 50%','Eliminación de la documentación','Menor número de programadores necesarios'],ans:1,exp:'La combinación de CMMI con V&V reduce defectos entre 20% y 50%, además de disminuir costos por corrección tardía.'},
-  {q:'¿Qué caracteriza al Nivel 4 de CMM?',opts:['Procesos caóticos','Mejora continua','Control estadístico del proceso con métricas cuantitativas','Solo procesos básicos de gestión'],ans:2,exp:'El Nivel 4 (Cuantitativamente Gestionado) se caracteriza por el control estadístico del proceso mediante métricas cuantitativas.'},
-  {q:'¿Cuál es el objetivo del Nivel 5 de CMM?',opts:['Establecer procesos básicos','Gestionar proyectos con cronograma','Mejora continua de los procesos','Documentar los estándares'],ans:2,exp:'El objetivo del Nivel 5 (Optimizado) es la mejora continua de los procesos organizacionales, previniendo defectos sistemáticamente.'},
-  {q:'¿Qué diferencia al Nivel 5 del Nivel 4 de CMM?',opts:['El número de programadores','La cantidad de proyectos','La optimización y mejora continua del proceso (vs solo medición)','El tipo de lenguaje de programación'],ans:2,exp:'El Nivel 4 mide y controla con métricas. El Nivel 5 va más allá: optimiza, analiza causas raíz y mejora continuamente.'},
-  {q:'¿Por qué la calidad del software es multidimensional?',opts:['Porque tiene muchas pantallas','Porque incluye atributos funcionales y no funcionales como eficiencia y seguridad','Porque usa múltiples lenguajes','Porque lo desarrollan muchos programadores'],ans:1,exp:'La calidad del software es multidimensional porque incluye atributos funcionales (qué hace) y no funcionales (cómo se comporta: eficiencia, seguridad, usabilidad).'},
-  {q:'¿Cuál es la diferencia fundamental entre verificación y validación?',opts:['No hay diferencia','Verificación: ¿bien construido conforme a especificaciones? Validación: ¿correcto para el usuario?','Verificación es más cara que validación','Validación se hace al inicio, verificación al final'],ans:1,exp:'Verificación = "¿Lo estamos construyendo bien?" (especificaciones técnicas). Validación = "¿Estamos construyendo lo correcto?" (necesidades del usuario).'},
-  {q:'¿Un ejemplo práctico de CMMI + V&V en metodologías ágiles?',opts:['Solo documentar al final','Hacer pruebas una vez por año','Aplicar V&V en cada sprint del desarrollo','Ignorar los requisitos del cliente'],ans:2,exp:'En metodologías ágiles, CMMI + V&V se aplica integrando verificación y validación en cada sprint del desarrollo.'},
-  {q:'¿Cuál es un desafío principal al implementar CMMI + V&V?',opts:['Falta de computadoras','El costo inicial elevado y resistencia cultural al cambio','Demasiados programadores disponibles','Internet lento'],ans:1,exp:'Los principales desafíos son: el costo inicial elevado, la resistencia cultural al cambio y la necesidad de capacitación continua.'},
-  {q:'¿Qué institución desarrolló originalmente el CMM?',opts:['MIT','IEEE','SEI (Software Engineering Institute) de Carnegie Mellon','ISO'],ans:2,exp:'El CMM fue desarrollado por el SEI (Software Engineering Institute) de la Universidad Carnegie Mellon, con apoyo de la corporación MITRE.'},
-  {q:'¿Para qué sirven los modelos de calidad de software?',opts:['Para elegir el lenguaje de programación','Para medir y evaluar objetivamente la calidad del software','Para contratar programadores','Para calcular el salario de los desarrolladores'],ans:1,exp:'Los modelos de calidad sirven para medir y evaluar objetivamente la calidad del software y guiar a las organizaciones hacia mejores prácticas.'},
-];
-
-// ════════════════════════════════
-//  DATOS — MODELOS (STEPS)
-// ════════════════════════════════
-const MODELOS_DATA = [
-  {t:'Cascada',d:'Modelo secuencial donde cada fase debe completarse antes de iniciar la siguiente. Sencillo y fácil de entender. Ideal cuando los requisitos están completamente definidos desde el inicio.',
-   i:['Análisis de Requisitos → Diseño → Implementación → Pruebas → Mantenimiento','✅ Ventajas: Simple, documentación completa, fácil de gestionar','❌ Desventajas: Muy rígido, sin retrocesos, mal en entornos cambiantes','🏢 Uso típico: Proyectos gubernamentales, sistemas industriales regulados']},
-  {t:'Incremental',d:'Divide el sistema en incrementos funcionales entregados progresivamente. El usuario puede usar versiones parciales mientras se desarrollan nuevas funcionalidades.',
-   i:['Incremento 1 (funcionalidad base) → Incremento 2 → ... → Sistema completo','✅ Ventajas: Retroalimentación temprana, gestión de riesgo, verificación continua','❌ Desventajas: Requiere arquitectura sólida, integración puede ser compleja','🏢 Uso típico: Proyectos donde el cliente quiere ver avances rápidos']},
-  {t:'Espiral',d:'Propuesto por Barry Boehm. Combina desarrollo iterativo con análisis de riesgos. Cada ciclo incluye planificación, análisis de riesgos, desarrollo y evaluación.',
-   i:['Cada vuelta de la espiral: Planificación → Riesgos → Desarrollo → Evaluación','✅ Ventajas: Excelente gestión de riesgos, flexible, mejora iterativa','❌ Desventajas: Complejo y costoso, difícil de gestionar en proyectos pequeños','🏢 Uso típico: Proyectos grandes, críticos o con alta incertidumbre']},
-  {t:'Modelo en V',d:'Evolución del cascada que enfatiza la relación entre desarrollo y pruebas. Cada fase de desarrollo tiene una fase de prueba correspondiente.',
-   i:['Lado izquierdo: Requisitos → Diseño → Implementación. Lado derecho: Pruebas de aceptación → Integración → Unitarias','✅ Ventajas: Pruebas planificadas desde el inicio, alta calidad verificable','❌ Desventajas: Tan rígido como cascada, no maneja bien cambios','🏢 Uso típico: Automotriz, aeronáutica, sistemas médicos de seguridad crítica']},
-  {t:'Ágil / Scrum',d:'Trabajo en sprints cortos (2-4 semanas) con entregas funcionales en cada iteración. Roles: Product Owner, Scrum Master, Development Team.',
-   i:['Sprint Planning → Daily Scrum → Sprint Review → Sprint Retrospective → siguiente Sprint','✅ Ventajas: Altamente flexible, feedback continuo, entrega rápida de valor','❌ Desventajas: Difícil escalar, requiere disciplina del equipo, menos documentación','🏢 Uso típico: Startups, apps web/móvil, entornos con requisitos cambiantes']},
-];
-
-// ════════════════════════════════
-//  ESTADO GLOBAL
-// ════════════════════════════════
-let xp=0,totalCorrect=0,totalQuizzes=0;
-const qState={};
-const gState={
-  g1:{data:GLOS1,filtered:GLOS1,cur:0,tag:'all'},
-  g2:{data:GLOS2,filtered:GLOS2,cur:0,tag:'all'},
-  g3:{data:GLOS3,filtered:GLOS3,cur:0,tag:'all'},
-};
-
-// ════════════════════════════════
-//  NAVEGACIÓN
-// ════════════════════════════════
-function nav(id,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if(el) el.classList.add('active');
-  else document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('active');});
-  document.getElementById('sb').classList.remove('open');
-  if(id==='glos1'&&!document.getElementById('glist1').children.length) buildGlos('g1');
-  if(id==='glos2'&&!document.getElementById('glist2').children.length) buildGlos('g2');
-  if(id==='glos3'&&!document.getElementById('glist3').children.length) buildGlos('g3');
-  if(id==='quiz1'&&!qState['q1']) initQuiz('q1',Q1,'q1-area');
-  if(id==='quiz2'&&!qState['q2']) initQuiz('q2',Q2,'q2-area');
-  if(id==='quiz3'&&!qState['q3']) initQuiz('q3',Q3,'q3-area');
-  if(id==='modelos'&&!document.getElementById('modelo-det-wrap').children.length) showModelo(0,document.querySelectorAll('.spill')[0]);
-  window.scrollTo(0,0);
-}
-function toggleSB(){document.getElementById('sb').classList.toggle('open');}
-
-// ════════════════════════════════
-//  GLOSARIO
-// ════════════════════════════════
-function buildGlos(key){
-  const s=gState[key];
-  const n=key.slice(-1);
-  const listEl=document.getElementById('glist'+n);
-  listEl.innerHTML='';
-  if(!s.filtered.length){listEl.innerHTML='<p style="padding:.75rem 1rem;font-size:.82rem;color:var(--muted)">Sin resultados.</p>';return;}
-  s.filtered.forEach((t,i)=>{
-    const d=document.createElement('div');
-    d.className='glos-item'+(i===s.cur?' active':'');
-    d.innerHTML=`<span class="gi-ico">${t.icon}</span><span>${t.name}</span><span class="gi-num">${i+1}</span>`;
-    d.onclick=()=>goToTerm(key,i);
-    listEl.appendChild(d);
-  });
-  renderSlide(key);
-}
-
-function renderSlide(key){
-  const s=gState[key];
-  const n=key.slice(-1);
-  const total=s.filtered.length;
-  if(!total){document.getElementById('gslide'+n).innerHTML='<p style="color:var(--muted);padding:1rem">Sin términos.</p>';return;}
-  const idx=Math.min(s.cur,total-1);
-  s.cur=idx;
-  const t=s.filtered[idx];
-  const tag=t.tag||'concepto';
-  const pbColors={
-    concepto:'linear-gradient(90deg,#7c3aed,#6366f1)',
-    proceso:'linear-gradient(90deg,#d97706,#eab308)',
-    modelo:'linear-gradient(90deg,#0066ff,#06b6d4)',
-    metodologia:'linear-gradient(90deg,#059669,#10b981)',
-    calidad:'linear-gradient(90deg,#dc2626,#f97316)',
-  };
-  const pbGrad=pbColors[tag]||pbColors.concepto;
-  const pbar=document.getElementById('g'+n+'-pbar');
-  pbar.style.width=`${((idx+1)/total)*100}%`;
-  pbar.style.background=pbGrad;
-  document.getElementById('g'+n+'-plab').textContent=`${idx+1} / ${total}`;
-  const ptag=document.getElementById('g'+n+'-ptag');
-  ptag.textContent=tag;
-  const tagColors={
-    concepto:{bg:'#ede9fe',col:'#5b21b6'},
-    proceso:{bg:'#fef3c7',col:'#92400e'},
-    modelo:{bg:'#dbeafe',col:'#1e40af'},
-    metodologia:{bg:'#d1fae5',col:'#065f46'},
-    calidad:{bg:'#fee2e2',col:'#991b1b'},
-  };
-  const tc=tagColors[tag]||tagColors.concepto;
-  ptag.style.background=tc.bg;
-  ptag.style.color=tc.col;
-
-  // Update list highlight
-  const listEl=document.getElementById('glist'+n);
-  listEl.querySelectorAll('.glos-item').forEach((el,i)=>{
-    el.classList.toggle('active',i===idx);
-    if(i===idx) el.scrollIntoView({block:'nearest',behavior:'smooth'});
-  });
-
-  const prev=idx>0;
-  const next=idx<total-1;
-  document.getElementById('gslide'+n).innerHTML=`
-    <div class="glos-slide gs-bg-${tag}">
-      <div class="gs-hero">
-        <div class="gs-big-icon">${t.icon}</div>
-        <div class="gs-hero-text">
-          <span class="gs-tag t-${tag}">${tag}</span>
-          <div class="gs-name">${t.name}</div>
-        </div>
-      </div>
-      <div class="gs-body">
-        <div class="gs-def">${t.def}</div>
-        ${t.keys?`<div class="gs-keys">${t.keys.map(k=>`<span class="gs-key">${k}</span>`).join('')}</div>`:''}
-        ${t.memo?`<div class="gs-memo"><span class="gs-memo-ico">💡</span><div class="gs-memo-text"><strong>Truco para recordar:</strong> ${t.memo}</div></div>`:''}
-        <div class="gs-nav">
-          <div class="gs-kbd-hint"><span class="gs-kbd">←</span><span class="gs-kbd">→</span> navegar</div>
-          <span class="gs-nav-info">${idx+1} de ${total}</span>
-          <div class="gs-nav-btns">
-            <button class="btn sec" onclick="goToTerm('${key}',${idx-1})" ${prev?'':'disabled'}>← Anterior</button>
-            <button class="btn" onclick="goToTerm('${key}',${idx+1})" ${next?'':'disabled'}>Siguiente →</button>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  addXP(2);
-}
-
-function goToTerm(key,idx){
-  const s=gState[key];
-  if(idx<0||idx>=s.filtered.length) return;
-  s.cur=idx;
-  renderSlide(key);
-}
-
-function gSearch(key){
-  const n=key.slice(-1);
-  const q=document.getElementById('gsearch'+n).value.toLowerCase();
-  const s=gState[key];
-  const src=s.tag==='all'?s.data:s.data.filter(t=>t.tag===s.tag);
-  s.filtered=q?src.filter(t=>t.name.toLowerCase().includes(q)||t.def.toLowerCase().includes(q)):src;
-  s.cur=0;
-  buildGlos(key);
-}
-
-function gTag(key,tag,el){
-  const n=key.slice(-1);
-  gState[key].tag=tag;
-  document.getElementById('gpills'+n).querySelectorAll('.gpill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  const q=document.getElementById('gsearch'+n).value.toLowerCase();
-  const src=tag==='all'?gState[key].data:gState[key].data.filter(t=>t.tag===tag);
-  gState[key].filtered=q?src.filter(t=>t.name.toLowerCase().includes(q)||t.def.toLowerCase().includes(q)):src;
-  gState[key].cur=0;
-  buildGlos(key);
-}
-
-// Keyboard navigation
-document.addEventListener('keydown',e=>{
-  const activeGlos=['glos1','glos2','glos3'].find(id=>document.getElementById('page-'+id).classList.contains('active'));
-  if(activeGlos){
-    const key=activeGlos==='glos1'?'g1':activeGlos==='glos2'?'g2':'g3';
-    if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();goToTerm(key,gState[key].cur+1);}
-    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();goToTerm(key,gState[key].cur-1);}
+function toggleCard(id){
+  const expand=document.getElementById('expand-'+id);
+  const toggle=document.getElementById('toggle-'+id);
+  const isOpen=expand.classList.contains('open');
+  // Cerrar todos
+  document.querySelectorAll('.card-expand').forEach(e=>e.classList.remove('open'));
+  document.querySelectorAll('.card-toggle').forEach(t=>t.classList.remove('open'));
+  // Abrir el clickeado si estaba cerrado
+  if(!isOpen){
+    expand.classList.add('open');
+    toggle.classList.add('open');
   }
-});
-
-// ════════════════════════════════
-//  QUIZ
-// ════════════════════════════════
-function initQuiz(key,data,areaId){
-  qState[key]={data:[...data].sort(()=>Math.random()-.5),cur:0,score:0,ans:false};
-  renderQ(key,areaId);
-}
-function renderQ(key,areaId){
-  const s=qState[key];const q=s.data[s.cur];const tot=s.data.length;
-  const dr=key==='q1'?Q1:key==='q2'?Q2:Q3;
-  const drKey=key;
-  document.getElementById(areaId).innerHTML=`
-    <div class="prog-hd"><span>Pregunta ${s.cur+1} de ${tot}</span><span class="slive">✓ ${s.score} correctas</span></div>
-    <div class="prog-tr"><div class="prog-fi" style="width:${(s.cur/tot)*100}%"></div></div>
-    <div class="qcard">
-      <div class="qnum">PREGUNTA ${String(s.cur+1).padStart(2,'0')}</div>
-      <div class="qtxt">${q.q}</div>
-      <div class="opts" id="${key}-opts"></div>
-      <div class="fb" id="${key}-fb"></div>
-      <div class="btn-row">
-        <button class="btn hidden" id="${key}-next" onclick="nextQ('${key}','${areaId}')">Siguiente →</button>
-        <button class="btn sec" onclick="initQuiz('${key}',${drKey==='q1'?'Q1':drKey==='q2'?'Q2':'Q3'},'${areaId}')">↺ Reiniciar</button>
-      </div>
-    </div>`;
-  ['A','B','C','D'].forEach((l,i)=>{
-    const b=document.createElement('button');b.className='opt';
-    b.innerHTML=`<span class="ltr">${l}</span><span>${q.opts[i]}</span>`;
-    b.onclick=()=>selOpt(key,areaId,i);
-    document.getElementById(key+'-opts').appendChild(b);
-  });
-}
-function selOpt(key,areaId,idx){
-  const s=qState[key];if(s.ans)return;s.ans=true;
-  const q=s.data[s.cur];
-  document.querySelectorAll('#'+key+'-opts .opt').forEach((el,i)=>{
-    el.classList.add('locked');
-    if(i===q.ans)el.classList.add('correct');
-    else if(i===idx)el.classList.add('wrong');
-  });
-  const fb=document.getElementById(key+'-fb');
-  if(idx===q.ans){s.score++;fb.className='fb ok show';fb.textContent='✓ ¡Correcto! '+q.exp;addXP(10);totalCorrect++;}
-  else{fb.className='fb fail show';fb.textContent='✗ Incorrecto. '+q.exp;}
-  document.getElementById(key+'-next').classList.remove('hidden');
-  document.getElementById('stc').textContent=totalCorrect;
-}
-function nextQ(key,areaId){
-  const s=qState[key];s.cur++;s.ans=false;
-  s.cur>=s.data.length?showScore(key,areaId):renderQ(key,areaId);
-}
-function showScore(key,areaId){
-  const s=qState[key];const tot=s.data.length;const pct=s.score/tot;
-  totalQuizzes++;document.getElementById('stq').textContent=totalQuizzes;addXP(50);
-  const drSrc=key==='q1'?'Q1':key==='q2'?'Q2':'Q3';
-  const[ttl,msg]=pct===1?['🎓 ¡Perfecto!','Dominas todos los conceptos. ¡Listo para el examen!']:
-    pct>=.8?['💪 ¡Excelente!','Muy buen desempeño. Repasa los temas que fallaste.']:
-    pct>=.6?['⚠️ Aceptable','Hay conceptos que necesitan más atención. Revisa el glosario.']:
-    ['📚 Necesitas repasar','Revisa el glosario antes de intentarlo de nuevo.'];
-  document.getElementById(areaId).innerHTML=`
-    <div class="score-wrap"><div class="qcard" style="padding:2.5rem 2rem">
-      <div class="score-ring"><div class="score-big">${s.score}</div><div class="score-of">de ${tot}</div></div>
-      <div class="score-ttl">${ttl}</div><div class="score-msg">${msg}</div>
-      <div class="btn-row" style="justify-content:center">
-        <button class="btn" onclick="initQuiz('${key}',${drSrc},'${areaId}')">↺ Intentar de nuevo</button>
-      </div>
-    </div></div>`;
-}
-
-// ════════════════════════════════
-//  MODELOS COMPARATIVA
-// ════════════════════════════════
-function showModelo(idx,el){
-  document.querySelectorAll('.spill').forEach(p=>p.classList.remove('active'));
-  if(el)el.classList.add('active');
-  const m=MODELOS_DATA[idx];
-  document.getElementById('modelo-det-wrap').innerHTML=`
-    <div class="step-det show"><h4>${m.t}</h4><p>${m.d}</p><ul>${m.i.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
-}
-
-// ════════════════════════════════
-//  XP
-// ════════════════════════════════
-function addXP(pts){
-  xp+=pts;
-  document.getElementById('xpv').textContent=xp;
-  document.getElementById('xpf').style.width=Math.min(100,(xp%500)/5)+'%';
 }
 </script>
 </body>

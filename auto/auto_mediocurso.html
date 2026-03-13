@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoStudy · Automatización de Sistemas Dinámicos</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0f4f8; --surface:#ffffff; --surface2:#f8fafc;
+  --border:#dde3ea; --border2:#c8d2dc;
+  --text:#0f1923; --text2:#2d3f52; --muted:#5a7085; --muted2:#7a90a4;
+  --blue:#0066ff; --blue-bg:#e8f0ff;
+  --purple:#7c3aed; --purple-bg:#f3eeff;
+  --red:#dc2626; --red-bg:#fff0f0;
+  --green:#059669; --green-bg:#e6faf4;
+  --amber:#d97706; --amber-bg:#fff8e6;
+  --teal:#0891b2; --teal-bg:#e0f7fa;
+  --accent:#0891b2; --accent-bg:#e0f7fa; --accent-dark:#0e7490;
+  --correct:#059669; --wrong:#dc2626;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',sans-serif;
+  --r:10px;
+  --sh:0 2px 8px rgba(0,0,0,0.07),0 0 0 1px rgba(0,0,0,0.04);
+  --sh-md:0 6px 24px rgba(0,0,0,0.1);
+  --sh-lg:0 16px 48px rgba(0,0,0,0.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;font-size:16px;line-height:1.6;overflow-x:hidden}
+
+.sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;transition:transform .3s;box-shadow:2px 0 12px rgba(0,0,0,.06)}
+.sb-logo{padding:1.5rem 1.25rem 1.25rem;border-bottom:1px solid var(--border)}
+.sb-badge{font-family:var(--mono);font-size:.6rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem;font-weight:600}
+.sb-title{font-size:1.4rem;font-weight:800;color:var(--text);letter-spacing:-.02em}
+.sb-title span{color:var(--accent)}
+.nav{padding:.75rem 0;flex:1;overflow-y:auto}
+.nav-sec{font-family:var(--mono);font-size:.6rem;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;padding:.9rem 1.25rem .35rem;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:.55rem;padding:.55rem 1.25rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--muted);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--bg)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-bg);font-weight:600}
+.sb-footer{padding:1rem 1.25rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:.65rem;color:var(--muted)}
+.xp-bar{background:var(--border);border-radius:3px;height:5px;margin-top:.4rem;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));border-radius:3px;transition:width .5s}
+
+.main{margin-left:256px;min-height:100vh}
+.topbar{position:sticky;top:0;background:rgba(240,244,248,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:50}
+.tb-title{font-size:.78rem;font-weight:600;color:var(--muted)}
+.tb-stats{display:flex;gap:1.5rem;font-size:.78rem}
+.stat{display:flex;align-items:center;gap:.35rem}
+.stat-v{color:var(--accent);font-weight:700}
+.stat-l{color:var(--muted)}
+.content{padding:2.5rem 2rem;max-width:860px}
+
+.page{display:none;animation:fadeIn .25s ease}
+.page.active{display:block}
+
+.sec-title{display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;flex-wrap:wrap}
+.sec-title h2{font-size:1.75rem;font-weight:800;letter-spacing:-.025em}
+.chip{font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .7rem;border-radius:20px;background:var(--accent-bg);color:var(--accent);border:1px solid #a5f3fc}
+
+.hero{margin-bottom:2.5rem}
+.hero-ey{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem}
+.hero h1{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:.75rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{font-size:1rem;color:var(--muted);line-height:1.65;max-width:500px}
+.mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.mod{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;cursor:pointer;transition:all .2s;box-shadow:var(--sh);position:relative;overflow:hidden}
+.mod::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.mod.cb::before{background:var(--blue)}.mod.ct::before{background:var(--accent)}.mod.ca::before{background:var(--amber)}.mod.cg::before{background:var(--green)}.mod.cp::before{background:var(--purple)}
+.mod:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--border2)}
+.mod-ico{font-size:2rem;margin-bottom:.6rem}
+.mod-lbl{font-family:var(--mono);font-size:.62rem;font-weight:600;color:var(--muted2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.mod-ttl{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.mod-desc{font-size:.85rem;color:var(--muted);line-height:1.5;margin-bottom:.9rem}
+.mod-meta{display:flex;gap:.75rem;font-size:.75rem;color:var(--muted2);font-family:var(--mono)}
+
+/* GLOSARIO */
+.glos-layout{display:grid;grid-template-columns:210px 1fr;gap:1.25rem;align-items:start}
+.glos-index{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column;position:sticky;top:68px;max-height:calc(100vh - 90px)}
+.glos-search-wrap{padding:.65rem;border-bottom:1px solid var(--border)}
+.glos-search{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:.45rem .7rem;font-family:var(--sans);font-size:.8rem;color:var(--text);outline:none;background:var(--bg);transition:border-color .2s}
+.glos-search:focus{border-color:var(--accent)}
+.glos-pills{display:flex;gap:.25rem;padding:.45rem .65rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.gpill{font-size:.6rem;font-weight:600;padding:.18rem .45rem;border-radius:10px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .15s;font-family:var(--mono)}
+.gpill:hover,.gpill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.glos-list{flex:1;overflow-y:auto;padding:.3rem 0}
+.glos-item{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--muted);transition:all .15s;border-left:3px solid transparent}
+.glos-item:hover{background:var(--bg);color:var(--text)}
+.glos-item.active{background:var(--accent-bg);color:var(--accent);border-left-color:var(--accent);font-weight:700}
+.glos-item .gi-ico{font-size:1rem;flex-shrink:0}
+.glos-item .gi-num{font-family:var(--mono);font-size:.58rem;color:var(--muted2);margin-left:auto;flex-shrink:0}
+.glos-slide-wrap{display:flex;flex-direction:column;gap:.85rem}
+.glos-progress{display:flex;align-items:center;gap:.75rem;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.glos-prog-bar{flex:1;background:var(--border);height:6px;border-radius:3px;overflow:hidden}
+.glos-prog-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.glos-slide{border-radius:20px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;animation:slideIn .35s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;min-height:500px}
+.gs-hero{padding:2.25rem 2.5rem 2rem;display:flex;align-items:flex-start;gap:1.5rem;position:relative}
+.gs-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(0,0,0,.07)}
+.gs-big-icon{font-size:3.8rem;line-height:1;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.15));animation:iconPop .4s cubic-bezier(.34,1.56,.64,1)}
+.gs-hero-text{flex:1;min-width:0}
+.gs-tag{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:.22rem .65rem;border-radius:20px;margin-bottom:.65rem}
+.gs-tag.t-concepto{background:rgba(255,255,255,.35);color:#155e75;border:1px solid rgba(21,94,117,.2)}
+.gs-tag.t-control{background:rgba(255,255,255,.35);color:#3b0764;border:1px solid rgba(59,7,100,.2)}
+.gs-tag.t-transformada{background:rgba(255,255,255,.35);color:#78350f;border:1px solid rgba(120,53,15,.2)}
+.gs-tag.t-señal{background:rgba(255,255,255,.35);color:#065f46;border:1px solid rgba(6,95,70,.2)}
+.gs-name{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-.04em;line-height:1.1;color:rgba(0,0,0,.82);text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.gs-body{background:#fff;flex:1;display:flex;flex-direction:column;padding:1.75rem 2.5rem 1.5rem}
+.gs-def{font-size:1.07rem;color:#1a2b3c;line-height:1.82;font-weight:400;flex:1;letter-spacing:.01em}
+.gs-def strong{color:#0f1923;font-weight:700}
+.gs-keys{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1.1rem}
+.gs-key{font-family:var(--mono);font-size:.68rem;font-weight:600;padding:.22rem .6rem;border-radius:6px;background:var(--bg);border:1px solid var(--border);color:var(--muted2);cursor:default}
+.gs-memo{margin-top:1.1rem;padding:.9rem 1.1rem;background:var(--bg);border-radius:10px;border-left:3px solid var(--accent);display:flex;gap:.7rem;align-items:flex-start}
+.gs-memo-ico{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+.gs-memo-text{font-size:.86rem;color:var(--muted);line-height:1.6}
+.gs-memo-text strong{color:var(--text2);font-weight:600}
+.gs-nav{display:flex;align-items:center;justify-content:space-between;margin-top:1.4rem;padding-top:1.1rem;border-top:1px solid var(--border)}
+.gs-nav-info{font-family:var(--mono);font-size:.7rem;color:var(--muted2)}
+.gs-nav-btns{display:flex;gap:.6rem}
+.gs-kbd-hint{display:flex;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.6rem;color:var(--muted2)}
+.gs-kbd{background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:.1rem .35rem;font-size:.6rem;box-shadow:0 1px 0 var(--border2)}
+
+.gs-bg-concepto{background:linear-gradient(135deg,#ecfeff,#cffafe)}
+.gs-bg-control{background:linear-gradient(135deg,#faf5ff,#ede9fe)}
+.gs-bg-transformada{background:linear-gradient(135deg,#fffbeb,#fef3c7)}
+.gs-bg-señal{background:linear-gradient(135deg,#ecfdf5,#d1fae5)}
+.glos-slide::before{content:'';position:absolute;top:0;left:0;right:0;height:5px}
+.gs-bg-concepto::before{background:linear-gradient(90deg,#0891b2,#06b6d4)}
+.gs-bg-control::before{background:linear-gradient(90deg,#7c3aed,#6366f1)}
+.gs-bg-transformada::before{background:linear-gradient(90deg,#d97706,#eab308)}
+.gs-bg-señal::before{background:linear-gradient(90deg,#059669,#10b981)}
+
+@keyframes iconPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.25rem;background:var(--accent);border:none;color:#fff;font-family:var(--sans);font-size:.85rem;font-weight:600;cursor:pointer;border-radius:7px;transition:all .15s}
+.btn:hover{background:var(--accent-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(8,145,178,.3)}
+.btn.sec{background:var(--surface);color:var(--muted);border:1.5px solid var(--border)}
+.btn.sec:hover{background:var(--bg);color:var(--text);border-color:var(--border2);transform:none;box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+.btn.hidden{display:none}
+
+/* QUIZ */
+.qmeta{display:flex;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.qchip{font-size:.8rem;font-weight:500;padding:.35rem .8rem;border:1px solid var(--border);border-radius:20px;color:var(--muted);background:var(--surface)}
+.prog-hd{display:flex;justify-content:space-between;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:.5rem}
+.prog-hd .slive{color:var(--green)}
+.prog-tr{background:var(--border);height:5px;border-radius:3px;margin-bottom:1.5rem;overflow:hidden}
+.prog-fi{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));border-radius:3px;transition:width .4s}
+.qcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:1.75rem;box-shadow:var(--sh);animation:slideIn .3s ease}
+.qnum{font-family:var(--mono);font-size:.65rem;font-weight:600;color:var(--accent);background:var(--accent-bg);padding:.2rem .6rem;border-radius:4px;display:inline-block;margin-bottom:.75rem}
+.qtxt{font-size:1.1rem;font-weight:700;line-height:1.5;color:var(--text);margin-bottom:1.25rem}
+.opts{display:flex;flex-direction:column;gap:.55rem}
+.opt{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 1rem;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;background:var(--bg);color:var(--text);text-align:left;font-family:var(--sans);font-size:.95rem;line-height:1.45;width:100%;font-weight:500}
+.opt:hover:not(.locked){border-color:var(--accent);background:var(--accent-bg)}
+.opt .ltr{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--muted2);flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.1rem .35rem;min-width:24px;text-align:center;transition:all .15s;margin-top:.1rem}
+.opt:hover:not(.locked) .ltr{background:var(--accent);color:#fff;border-color:var(--accent)}
+.opt.correct{border-color:var(--green);background:var(--green-bg)}
+.opt.correct .ltr{background:var(--green);color:#fff;border-color:var(--green)}
+.opt.wrong{border-color:var(--red);background:var(--red-bg)}
+.opt.wrong .ltr{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.locked{cursor:default}
+.fb{margin-top:1rem;padding:1rem 1.1rem;border-radius:8px;font-size:.9rem;line-height:1.6;display:none;font-weight:500}
+.fb.show{display:block;animation:fadeIn .2s}
+.fb.ok{background:var(--green-bg);border:1.5px solid #6ee7b7;color:#065f46}
+.fb.fail{background:var(--red-bg);border:1.5px solid #fca5a5;color:#991b1b}
+.btn-row{margin-top:1.25rem;display:flex;gap:.6rem;flex-wrap:wrap}
+.score-wrap{text-align:center;max-width:440px;margin:0 auto}
+.score-ring{width:130px;height:130px;border-radius:50%;background:var(--accent-bg);border:4px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:1.5rem auto;box-shadow:0 0 0 8px rgba(8,145,178,.08)}
+.score-big{font-size:2.8rem;font-weight:800;color:var(--accent);line-height:1}
+.score-of{font-size:.75rem;color:var(--muted);font-family:var(--mono)}
+.score-ttl{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.score-msg{font-size:.92rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
+
+/* VF Section */
+.vf-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:1.75rem;box-shadow:var(--sh);animation:slideIn .3s ease}
+.vf-stmt{font-size:1.05rem;font-weight:600;line-height:1.55;color:var(--text);margin-bottom:1.25rem}
+.vf-btns{display:flex;gap:.75rem;margin-bottom:.75rem}
+.vf-btn{flex:1;padding:.75rem;border:1.5px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:1rem;font-weight:700;cursor:pointer;transition:all .15s;background:var(--bg)}
+.vf-btn.verd{color:var(--green)}
+.vf-btn.fals{color:var(--red)}
+.vf-btn:hover:not(.locked){background:var(--surface);border-color:var(--accent)}
+.vf-btn.correct{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.vf-btn.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.vf-btn.locked{cursor:default}
+
+/* Relacionar section */
+.rel-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
+.rel-col h4{font-size:.75rem;font-family:var(--mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem;font-weight:700}
+.rel-item{padding:.7rem 1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;margin-bottom:.5rem;cursor:pointer;transition:all .15s;line-height:1.45}
+.rel-item:hover{border-color:var(--accent);background:var(--accent-bg)}
+.rel-item.sel{border-color:var(--accent);background:var(--accent-bg);font-weight:600}
+.rel-item.matched{border-color:var(--green);background:var(--green-bg);cursor:default}
+.rel-item.wrong-match{border-color:var(--red);background:var(--red-bg)}
+.rel-letter{font-family:var(--mono);font-weight:700;color:var(--accent);margin-right:.35rem}
+.rel-fb{margin-top:1rem;padding:.85rem 1.1rem;border-radius:8px;font-size:.88rem;font-weight:500;display:none}
+.rel-fb.show{display:block}
+.rel-fb.ok{background:var(--green-bg);border:1.5px solid #6ee7b7;color:#065f46}
+.rel-fb.fail{background:var(--red-bg);border:1.5px solid #fca5a5;color:#991b1b}
+.rel-score{margin-top:1.25rem;font-size:.88rem;color:var(--muted);font-family:var(--mono)}
+
+/* Steps / Conceptos */
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.25rem}
+.spill{display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.65rem .9rem;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted);box-shadow:var(--sh)}
+.spill .sn{width:22px;height:22px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--muted);flex-shrink:0}
+.spill:hover,.spill.active{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.spill.active .sn{background:var(--accent);color:#fff;border-color:var(--accent)}
+.step-det{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:1.5rem;display:none;animation:fadeIn .2s;box-shadow:var(--sh)}
+.step-det.show{display:block}
+.step-det h4{font-size:1.05rem;font-weight:700;color:var(--accent);margin-bottom:.5rem}
+.step-det p{font-size:.93rem;color:var(--text2);line-height:1.65;margin-bottom:.9rem}
+.step-det li{font-size:.9rem;color:var(--text2);padding:.5rem .9rem;background:var(--bg);border-radius:6px;border-left:3px solid var(--accent);line-height:1.5;list-style:none;margin-bottom:.4rem}
+.ibox{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:1.25rem;box-shadow:var(--sh);margin-top:1.5rem}
+.ibox h4{font-size:.95rem;font-weight:700;color:var(--accent);margin-bottom:.75rem}
+.ibox li{font-size:.9rem;color:var(--text2);padding:.45rem .85rem;background:var(--bg);border-radius:6px;border-left:3px solid var(--accent);line-height:1.5;margin-bottom:.4rem;list-style:none}
+
+.mob-tog{display:none;position:fixed;top:.75rem;left:.75rem;z-index:200;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.45rem .65rem;cursor:pointer;font-size:1.1rem;color:var(--text);box-shadow:var(--sh)}
+@media(max-width:900px){.glos-layout{grid-template-columns:175px 1fr}}
+@media(max-width:768px){
+  .mob-tog{display:block}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--sh-md)}
+  .main{margin-left:0}
+  .content{padding:4.5rem 1rem 2rem}
+  .topbar{padding:.7rem 1rem .7rem 4rem}
+  .mods{grid-template-columns:1fr}
+  .steps-row{grid-template-columns:1fr 1fr}
+  .glos-layout{grid-template-columns:1fr}
+  .glos-index{position:relative;top:auto;max-height:200px}
+  .gs-hero{padding:1.5rem 1.5rem 1.25rem}
+  .gs-body{padding:1.25rem 1.5rem 1.25rem}
+  .gs-big-icon{font-size:2.6rem}
+  .gs-name{font-size:1.4rem}
+  .rel-grid{grid-template-columns:1fr}
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+<button class="mob-tog" onclick="toggleSB()">☰</button>
+
+<nav class="sidebar" id="sb">
+  <div class="sb-logo">
+    <div class="sb-badge">// plataforma de estudio</div>
+    <div class="sb-title">Auto<span>Study</span></div>
+  </div>
+  <div class="nav">
+    <div class="nav-sec">Inicio</div>
+    <div class="nav-item active" onclick="nav('home',this)"><span>⌂</span> Dashboard</div>
+    <div class="nav-sec">Glosario</div>
+    <div class="nav-item" onclick="nav('glos1',this)"><span>📖</span> Conceptos · Parte 1</div>
+    <div class="nav-item" onclick="nav('glos2',this)"><span>📖</span> Conceptos · Parte 2</div>
+    <div class="nav-sec">Quiz Sección I</div>
+    <div class="nav-item" onclick="nav('quiz1',this)"><span>✏️</span> Opción Múltiple (1–9)</div>
+    <div class="nav-sec">Quiz Sección II</div>
+    <div class="nav-item" onclick="nav('quiz2',this)"><span>✔️</span> Verdadero / Falso (10–19)</div>
+    <div class="nav-sec">Quiz Sección III</div>
+    <div class="nav-item" onclick="nav('quiz3',this)"><span>🔗</span> Relacionar Controladores (20–25)</div>
+  </div>
+  <div class="sb-footer">
+    XP Total: <strong id="xpv" style="color:var(--accent)">0</strong> pts
+    <div class="xp-bar"><div class="xp-fill" id="xpf" style="width:0%"></div></div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="topbar">
+    <div class="tb-title">Automatización de Sistemas Dinámicos · Medio Curso</div>
+    <div class="tb-stats">
+      <div class="stat"><span class="stat-v" id="stc">0</span><span class="stat-l"> correctas</span></div>
+      <div class="stat"><span class="stat-v" id="stq">0</span><span class="stat-l"> quizzes</span></div>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-ey">// Automatización · Examen Medio Curso</div>
+        <h1>Estudia.<br><em>Practica.</em><br>Aprueba.</h1>
+        <p>Plataforma de estudio con glosario interactivo y las 3 secciones del examen: opción múltiple, verdadero/falso y relacionar controladores.</p>
+      </div>
+      <div class="mods">
+        <div class="mod ct" onclick="nav('glos1',null)"><div class="mod-ico">📖</div><div class="mod-lbl">Glosario Parte 1</div><div class="mod-ttl">Conceptos Clave · Señales y Control</div><div class="mod-desc">Perturbación, variable manipulada, retroalimentación, servo control y más.</div><div class="mod-meta"><span>📚 11 conceptos</span></div></div>
+        <div class="mod cb" onclick="nav('glos2',null)"><div class="mod-ico">📖</div><div class="mod-lbl">Glosario Parte 2</div><div class="mod-ttl">Conceptos Clave · Transformadas y FT</div><div class="mod-desc">Laplace, linealización, variables de desviación, función de transferencia.</div><div class="mod-meta"><span>📚 11 conceptos</span></div></div>
+        <div class="mod ct" onclick="nav('quiz1',null)"><div class="mod-ico">✏️</div><div class="mod-lbl">Sección I</div><div class="mod-ttl">Opción Múltiple — Preguntas 1 a 9</div><div class="mod-desc">Sistemas dinámicos, función de transferencia, Laplace, diagramas de bloques.</div><div class="mod-meta"><span>📝 9 preguntas</span><span>⏱ ~3 min</span></div></div>
+        <div class="mod cg" onclick="nav('quiz2',null)"><div class="mod-ico">✔️</div><div class="mod-lbl">Sección II</div><div class="mod-ttl">Verdadero / Falso — Preguntas 10 a 19</div><div class="mod-desc">Evalúa cada afirmación sobre función de transferencia, Laplace y diagramas.</div><div class="mod-meta"><span>📝 10 enunciados</span><span>⏱ ~3 min</span></div></div>
+        <div class="mod cp" onclick="nav('quiz3',null)"><div class="mod-ico">🔗</div><div class="mod-lbl">Sección III</div><div class="mod-ttl">Relacionar Controladores — Preguntas 20 a 25</div><div class="mod-desc">Asocia cada característica con el controlador correcto: On-off, P, I, PD, PI, PID.</div><div class="mod-meta"><span>📝 6 pares</span><span>⏱ ~2 min</span></div></div>
+      </div>
+    </div>
+
+    <!-- GLOSARIO 1 -->
+    <div class="page" id="page-glos1">
+      <div class="sec-title"><h2>Glosario · Parte 1</h2><span class="chip">Señales y Control</span></div>
+      <div class="glos-layout">
+        <div class="glos-index">
+          <div class="glos-search-wrap"><input class="glos-search" id="gsearch1" placeholder="🔍 Buscar…" oninput="gSearch('g1')"></div>
+          <div class="glos-pills" id="gpills1">
+            <button class="gpill active" onclick="gTag('g1','all',this)">Todos</button>
+            <button class="gpill" onclick="gTag('g1','concepto',this)">Concepto</button>
+            <button class="gpill" onclick="gTag('g1','control',this)">Control</button>
+            <button class="gpill" onclick="gTag('g1','señal',this)">Señal</button>
+          </div>
+          <div class="glos-list" id="glist1"></div>
+        </div>
+        <div class="glos-slide-wrap">
+          <div class="glos-progress">
+            <span id="g1-plab">1 / 11</span>
+            <div class="glos-prog-bar"><div class="glos-prog-fill" id="g1-pbar" style="width:9%"></div></div>
+            <span id="g1-ptag" style="font-size:.65rem;padding:.15rem .5rem;border-radius:10px;background:var(--accent-bg);color:var(--accent);">concepto</span>
+          </div>
+          <div id="gslide1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOSARIO 2 -->
+    <div class="page" id="page-glos2">
+      <div class="sec-title"><h2>Glosario · Parte 2</h2><span class="chip">Transformadas y FT</span></div>
+      <div class="glos-layout">
+        <div class="glos-index">
+          <div class="glos-search-wrap"><input class="glos-search" id="gsearch2" placeholder="🔍 Buscar…" oninput="gSearch('g2')"></div>
+          <div class="glos-pills" id="gpills2">
+            <button class="gpill active" onclick="gTag('g2','all',this)">Todos</button>
+            <button class="gpill" onclick="gTag('g2','concepto',this)">Concepto</button>
+            <button class="gpill" onclick="gTag('g2','transformada',this)">Transformada</button>
+            <button class="gpill" onclick="gTag('g2','control',this)">Control</button>
+          </div>
+          <div class="glos-list" id="glist2"></div>
+        </div>
+        <div class="glos-slide-wrap">
+          <div class="glos-progress">
+            <span id="g2-plab">1 / 11</span>
+            <div class="glos-prog-bar"><div class="glos-prog-fill" id="g2-pbar" style="width:9%"></div></div>
+            <span id="g2-ptag" style="font-size:.65rem;padding:.15rem .5rem;border-radius:10px;background:var(--accent-bg);color:var(--accent);">transformada</span>
+          </div>
+          <div id="gslide2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ 1: Opción Múltiple -->
+    <div class="page" id="page-quiz1">
+      <div class="sec-title"><h2>Sección I · Opción Múltiple</h2><span class="chip">Preguntas 1–9</span></div>
+      <div class="qmeta"><span class="qchip">📚 Sistemas dinámicos · Laplace · Diagramas de bloques</span><span class="qchip">⏱ ~3 min</span></div>
+      <div id="q1-area"></div>
+    </div>
+
+    <!-- QUIZ 2: Verdadero / Falso -->
+    <div class="page" id="page-quiz2">
+      <div class="sec-title"><h2>Sección II · Verdadero / Falso</h2><span class="chip">Preguntas 10–19</span></div>
+      <div class="qmeta"><span class="qchip">📚 Función de transferencia · Linealización · Diagramas</span><span class="qchip">⏱ ~3 min</span></div>
+      <div id="q2-area"></div>
+    </div>
+
+    <!-- QUIZ 3: Relacionar -->
+    <div class="page" id="page-quiz3">
+      <div class="sec-title"><h2>Sección III · Relacionar Controladores</h2><span class="chip">Preguntas 20–25</span></div>
+      <div class="qmeta"><span class="qchip">📚 On-off · Proporcional · Integral · PD · PI · PID</span><span class="qchip">⏱ ~2 min</span></div>
+      <div id="q3-area"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+// ══════════════════════════════════════════
+//  GLOSARIO — PARTE 1: Señales y Control
+// ══════════════════════════════════════════
+const GLOS1 = [
+  {name:'Perturbación Interna',tag:'señal',icon:'⚠️',
+   def:'Una señal que tiende a afectar el valor de la salida de un sistema. La perturbación <strong>interna</strong> se genera <strong>dentro del sistema</strong>.',
+   memo:'Interna = nace dentro. Como un fallo mecánico que surge desde adentro de la máquina.',
+   keys:['Señal','Dentro del sistema','Afecta la salida']},
+  {name:'Perturbación Externa',tag:'señal',icon:'🌪️',
+   def:'Una señal que tiende a afectar el valor de la salida de un sistema. La perturbación <strong>externa</strong> se genera <strong>fuera del sistema</strong> y constituye una entrada.',
+   memo:'Externa = viene de afuera. Como el viento que empuja un avión en vuelo.',
+   keys:['Señal','Fuera del sistema','Entrada al sistema']},
+  {name:'Variable Manipulada',tag:'concepto',icon:'🎛️',
+   def:'La variable que <strong>modifica y puede alterar el estado del sistema</strong> por cualquier modificación de su magnitud o condición.',
+   memo:'Es el "volante" del sistema: tú la mueves para cambiar el rumbo del proceso.',
+   keys:['Magnitud','Condición','Altera el estado']},
+  {name:'Sistema de Control',tag:'control',icon:'⚙️',
+   def:'La <strong>combinación de los componentes que actúan conjuntamente</strong> y cumplen un determinado objetivo.',
+   memo:'No es un solo componente: es el equipo completo trabajando junto hacia una meta.',
+   keys:['Componentes','Objetivo','Actúan conjuntamente']},
+  {name:'Variable Controlada',tag:'concepto',icon:'📏',
+   def:'La variable del sistema <strong>cuya magnitud o condición se puede medir</strong>.',
+   memo:'Es lo que el sensor lee: temperatura, presión, velocidad… lo que necesitas saber.',
+   keys:['Medible','Magnitud','Condición del sistema']},
+  {name:'Sistema de Control por Retroalimentación',tag:'control',icon:'🔁',
+   def:'Un conjunto de elementos interconectados que al recibir cada señal realizan una función específica, necesaria para que el sistema <strong>controle determinadas funciones</strong>. Usa la salida para corregir la entrada.',
+   memo:'Como un termostato: mide la temperatura (salida) y la usa para encender/apagar la calefacción (entrada).',
+   keys:['Retroalimentación','Elementos interconectados','Salida corrige entrada']},
+  {name:'Servo Control',tag:'control',icon:'🤖',
+   def:'Junto con el <strong>control regulador</strong>, se utiliza para referirse a los sistemas diseñados para <strong>compensar las perturbaciones</strong>.',
+   memo:'Servo = seguir un punto de referencia que cambia. Como el volante asistido de un carro.',
+   keys:['Compensar perturbaciones','Punto de referencia variable']},
+  {name:'Control Regulador',tag:'control',icon:'⚖️',
+   def:'Junto con el servo control, se utiliza para referirse a los sistemas diseñados para <strong>compensar perturbaciones</strong>. Ejemplo histórico: mantener constante la velocidad de una máquina de vapor con carga variable.',
+   memo:'Regulador = mantener constante. La máquina de vapor de Watt fue el primer control regulador.',
+   keys:['Mantener constante','Perturbaciones','Máquina de vapor']},
+  {name:'Señales de Transmisión',tag:'señal',icon:'📡',
+   def:'Cuando se habla de señales de transmisión se refiere a los <strong>sistemas de control que han sido diseñados</strong> con tal propósito.',
+   memo:'Son las señales estandarizadas que viajan entre instrumentos en la industria de proceso.',
+   keys:['Transmisión','Sistemas de control','Industria']},
+  {name:'Circuito de Control por Retroalimentación',tag:'control',icon:'🔄',
+   def:'Se le llama así a las <strong>señales principales que maneja la industria de proceso</strong>. Es la estructura que toma la salida del sistema y la usa para ajustar continuamente la entrada.',
+   memo:'Circuito cerrado: salida → sensor → comparador → actuador → proceso → salida de nuevo.',
+   keys:['Industria de proceso','Señales principales','Circuito cerrado']},
+  {name:'Control Regulador (Aplicación histórica)',tag:'control',icon:'🏭',
+   def:'Las estrategias de control se aplicaron para controlar un proceso industrial: mantener <strong>constante la velocidad de una máquina de vapor con carga variable</strong>. Fue una aplicación del control regulador.',
+   memo:'James Watt y el regulador centrífugo (1788): el primer sistema de control automático industrial.',
+   keys:['Máquina de vapor','Velocidad constante','Carga variable','Primer control']},
+];
+
+// ══════════════════════════════════════════
+//  GLOSARIO — PARTE 2: Transformadas y FT
+// ══════════════════════════════════════════
+const GLOS2 = [
+  {name:'Ecuaciones Lineales y Laplace',tag:'transformada',icon:'📐',
+   def:'Las ecuaciones lineales representan un proceso en el cual se puede utilizar mediante <strong>transformadas de Laplace</strong>.',
+   memo:'Lineal = se puede transformar con Laplace. No lineal = necesitas linealizarla primero.',
+   keys:['Lineal','Transformada de Laplace','Proceso']},
+  {name:'Linealización',tag:'transformada',icon:'📈',
+   def:'Usada para <strong>aproximar las ecuaciones no lineales</strong> que representan un proceso a ecuaciones lineales, para que puedan analizarse mediante transformadas de Laplace.',
+   memo:'Linealizar = "aplanar" una curva cerca de un punto para poder usar Laplace.',
+   keys:['Ecuaciones no lineales','Aproximación','Punto de equilibrio']},
+  {name:'Variables de Desviación',tag:'concepto',icon:'📉',
+   def:'Se definen como la <strong>diferencia entre el valor de la variable o señal y su valor en el punto de operación</strong>.',
+   memo:'Desviación = valor actual − valor en punto de operación. Mide qué tanto te alejaste del equilibrio.',
+   keys:['Diferencia','Punto de operación','Perturbación pequeña']},
+  {name:'Plano Complejo',tag:'transformada',icon:'🗺️',
+   def:'Representación gráfica en un plano donde la <strong>parte imaginaria se sitúa en el eje vertical (imaginario)</strong> y la <strong>parte real en el eje horizontal (real)</strong>.',
+   memo:'Eje X = parte real. Eje Y = parte imaginaria. Las raíces de la FT viven aquí.',
+   keys:['Eje real','Eje imaginario','Representación gráfica','Dominio s']},
+  {name:'Transformada de Laplace',tag:'transformada',icon:'⚡',
+   def:'Herramienta matemática para el diseño de sistemas de control. Las <strong>funciones del tiempo son las variables del sistema</strong> y se aplican en las variables y señales (no en los procesos o instrumentos directamente).',
+   memo:'Convierte f(t) → F(s). Transforma ecuaciones diferenciales en álgebra del dominio s.',
+   keys:['Dominio s','f(t) → F(s)','Diseño de control','Ecuaciones diferenciales']},
+  {name:'Linealidad de Laplace',tag:'transformada',icon:'🔢',
+   def:'La <strong>propiedad más importante</strong> de la transformada de Laplace. Establece que la transformada de Laplace es lineal: L{af(t)+bg(t)} = aF(s)+bG(s).',
+   memo:'Linealidad = puedes partir sumas y sacar constantes de la transformada. ¡La regla más usada!',
+   keys:['Propiedad','Superposición','Constantes']},
+  {name:'Teorema de Diferenciación Real',tag:'transformada',icon:'∂',
+   def:'Establece la <strong>relación de la transformada de Laplace de una función con la de su derivada</strong>. L{f\'(t)} = sF(s) − f(0⁻).',
+   memo:'Derivar en tiempo = multiplicar por s en Laplace. Por eso las diferenciales se vuelven álgebra.',
+   keys:['Derivada','sF(s)','Condiciones iniciales','Diferenciación']},
+  {name:'Función de Transferencia (FT)',tag:'control',icon:'🔀',
+   def:'Uno de los conceptos más importantes del estudio de dinámica de procesos y control automático. <strong>Define completamente las características de estado estacionario y dinámico</strong> del sistema. Se desarrolla a partir de ecuaciones lineales.',
+   memo:'FT = G(s) = Y(s)/U(s). La "huella digital" matemática del sistema.',
+   keys:['Estado estacionario','Comportamiento dinámico','G(s)','Ecuaciones lineales']},
+  {name:'Función de Transferencia — Propiedades',tag:'control',icon:'📋',
+   def:'La función de transferencia tiene propiedades y características importantes que son totalmente <strong>verdaderas</strong>. No está limitada a sistemas estables: es válida para cualquier sistema lineal independientemente de su estabilidad.',
+   memo:'FT válida = sistema LINEAL. No importa si es estable o no. Estabilidad ≠ validez de la FT.',
+   keys:['Lineal','Estabilidad','Propiedades','Dominio s']},
+  {name:'Diagramas de Bloques — Origen',tag:'concepto',icon:'⬛',
+   def:'<strong>James Watt NO introdujo los diagramas de bloques</strong> (esto es falso). Los diagramas de bloques son una representación gráfica de las funciones de transferencia de sistemas de control.',
+   memo:'¡Ojo! Pregunta trampa: Watt inventó el regulador centrífugo, NO los diagramas de bloques.',
+   keys:['Representación gráfica','Funciones de transferencia','No fue Watt']},
+  {name:'Funciones de Transferencia de Circuito Cerrado',tag:'control',icon:'🔒',
+   def:'Las funciones de transferencia de las ecuaciones en un sistema con retroalimentación se conocen como <strong>"Funciones de transferencia de circuito cerrado"</strong>.',
+   memo:'Circuito cerrado = hay retroalimentación. La FT resultante incluye el efecto del lazo de control.',
+   keys:['Retroalimentación','Circuito cerrado','Lazo de control']},
+];
+
+// ══════════════════════════════════════════
+//  QUIZ 1 — Sección I: Opción Múltiple (preguntas 1–9)
+//  Respuestas tomadas DIRECTAMENTE de la guía con respuesta
+// ══════════════════════════════════════════
+const Q1 = [
+  {q:'1. ¿Qué son los sistemas dinámicos?',
+   opts:['Son modelos estáticos que describen el estado final de un sistema',
+         'Son modelos que describen cómo cambian las variables de un sistema con el tiempo',
+         'Son sistemas que no cambian con el tiempo',
+         'Son sistemas que solo dependen de la entrada presente'],
+   ans:1,
+   exp:'Son modelos que describen cómo cambian las variables de un sistema con el tiempo.'},
+
+  {q:'2. ¿Qué tipo de comportamiento tiene un sistema inestable?',
+   opts:['Su salida permanece constante con el tiempo',
+         'Su salida oscila siempre con amplitud constante',
+         'Su salida crece sin control con el tiempo',
+         'Su salida disminuye hasta llegar a cero'],
+   ans:2,
+   exp:'Un sistema inestable tiene una salida que crece sin control con el tiempo.'},
+
+  {q:'3. ¿Cuál de las siguientes es la función de transferencia de un sistema dinámico?',
+   opts:['Una gráfica que muestra la respuesta del sistema en el tiempo',
+         'Una ecuación diferencial que describe la salida en el dominio del tiempo',
+         'Una ecuación que describe la relación entre la salida y la entrada en el dominio de Laplace',
+         'Una tabla de valores de entrada y salida del sistema'],
+   ans:2,
+   exp:'La función de transferencia es una ecuación que describe la relación entre la salida y la entrada en el dominio de Laplace.'},
+
+  {q:'4. ¿Qué muestra un diagrama de bloques en el análisis de sistemas dinámicos?',
+   opts:['La estructura física del sistema',
+         'La relación matemática entre la entrada y salida del sistema',
+         'Los componentes eléctricos del sistema',
+         'El diagrama de flujo del programa de control'],
+   ans:1,
+   exp:'Un diagrama de bloques muestra la relación matemática entre la entrada y salida del sistema.'},
+
+  {q:'5. ¿Para qué se usa la transformada de Laplace de una función f(t)?',
+   opts:['Para graficar la señal en el dominio del tiempo',
+         'Para calcular la derivada de la función en el tiempo',
+         'Para resolver ecuaciones diferenciales en el dominio complejo',
+         'Para integrar la función en el dominio del tiempo'],
+   ans:2,
+   exp:'La transformada de Laplace se usa para resolver ecuaciones diferenciales en el dominio complejo (dominio s).'},
+
+  {q:'6. ¿Qué tipo de sistemas describen las funciones de transferencia?',
+   opts:['Solo sistemas no lineales',
+         'Sistemas lineales y no lineales por igual',
+         'Solo sistemas lineales',
+         'Solo sistemas estables'],
+   ans:2,
+   exp:'Las funciones de transferencia describen únicamente sistemas lineales.'},
+
+  {q:'7. ¿Cuál de los siguientes componentes NO es parte de un sistema de control?',
+   opts:['Sensor','Actuador','Componente de salida','Controlador'],
+   ans:2,
+   exp:'El "componente de salida" no es un componente estándar de un sistema de control. Los componentes típicos son: sensor, controlador, actuador y proceso.'},
+
+  {q:'8. ¿Qué significa "sistema de control"?',
+   opts:['Un sistema que solo mide variables del proceso',
+         'Un sistema que ajusta su comportamiento automáticamente para alcanzar un objetivo',
+         'Un sistema de software para monitorear procesos',
+         'Un sistema que solo actúa cuando hay un error mayor al 10%'],
+   ans:1,
+   exp:'Un sistema de control es aquel que ajusta su comportamiento automáticamente para alcanzar un objetivo.'},
+
+  {q:'9. ¿Cómo se describe un sistema dinámico?',
+   opts:['Un sistema cuya salida solo depende de la entrada presente',
+         'Un sistema que no tiene entradas',
+         'Un sistema cuya salida depende de las entradas pasadas y presentes',
+         'Un sistema que alcanza siempre un estado estable'],
+   ans:2,
+   exp:'Un sistema dinámico es aquel cuya salida depende de las entradas pasadas y presentes (tiene memoria).'},
+];
+
+// ══════════════════════════════════════════
+//  QUIZ 2 — Sección II: Verdadero / Falso (preguntas 10–19)
+//  Respuestas tomadas DIRECTAMENTE de la guía con respuesta
+// ══════════════════════════════════════════
+const Q2_VF = [
+  {n:10, stmt:'La función de transferencia de un sistema describe la relación entre su salida y entrada en el dominio de Laplace.',
+   ans:true,
+   exp:'VERDADERO. La función de transferencia G(s) = Y(s)/U(s) describe exactamente la relación salida/entrada en el dominio de Laplace.'},
+
+  {n:11, stmt:'La transformada de Laplace de una ecuación diferencial convierte la ecuación al dominio del tiempo.',
+   ans:false,
+   exp:'FALSO. La transformada de Laplace convierte la ecuación al dominio de la frecuencia compleja (dominio s), NO al dominio del tiempo.'},
+
+  {n:12, stmt:'La linealización de las ecuaciones es un proceso que transforma un sistema no lineal en uno lineal alrededor de un punto de equilibrio.',
+   ans:true,
+   exp:'VERDADERO. La linealización aproxima ecuaciones no lineales a lineales cerca del punto de equilibrio para poder aplicar Laplace.'},
+
+  {n:13, stmt:'Los diagramas de bloques permiten realizar un análisis de sistemas complejos mediante la interconexión de bloques de funciones de transferencia.',
+   ans:true,
+   exp:'VERDADERO. Los diagramas de bloques son precisamente eso: interconexión de bloques de funciones de transferencia para analizar sistemas complejos.'},
+
+  {n:14, stmt:'En un sistema dinámico, la función de transferencia solo es válida si el sistema es estable.',
+   ans:false,
+   exp:'FALSO. La función de transferencia es válida para cualquier sistema lineal, independientemente de si es estable o inestable.'},
+
+  {n:15, stmt:'Los diagramas de bloques pueden ser usados para visualizar cómo un sistema responde a diferentes tipos de entradas, pero no son útiles para realizar cálculos precisos de la salida.',
+   ans:false,
+   exp:'FALSO. Los diagramas de bloques SÍ son útiles para realizar cálculos precisos de la salida, no solo para visualizar.'},
+
+  {n:16, stmt:'La expresión en variables incrementales se utiliza para describir pequeñas perturbaciones alrededor del punto de equilibrio de un sistema no lineal.',
+   ans:true,
+   exp:'VERDADERO. Las variables de desviación (incrementales) describen las pequeñas perturbaciones alrededor del punto de equilibrio.'},
+
+  {n:17, stmt:'El punto de equilibrio de un sistema dinámico se obtiene cuando la entrada y la salida del sistema no cambian con el tiempo.',
+   ans:true,
+   exp:'VERDADERO. El punto de equilibrio (estado estacionario) ocurre cuando entradas y salidas son constantes (no cambian con el tiempo).'},
+
+  {n:18, stmt:'La representación de un sistema mediante su función de transferencia es útil solo para sistemas no lineales.',
+   ans:false,
+   exp:'FALSO. La función de transferencia es útil para sistemas LINEALES, no para no lineales (para estos se requiere linealización previa).'},
+
+  {n:19, stmt:'Una ventaja de los diagramas de bloques es que no se pueden utilizar para representar sistemas con retroalimentación.',
+   ans:false,
+   exp:'FALSO. Precisamente una de las grandes ventajas de los diagramas de bloques es que SÍ pueden representar sistemas con retroalimentación.'},
+];
+
+// ══════════════════════════════════════════
+//  QUIZ 3 — Sección III: Relacionar Controladores (20–25)
+//  Respuestas tomadas DIRECTAMENTE de la guía con respuesta
+// ══════════════════════════════════════════
+// Características (izquierda) → Controladores (derecha)
+// Según la guía:
+//  20. a) Elimina el error en estado estacionario → Integral (A)
+//  21. b) Cambia entre dos estados (on/off) → On-off (B)
+//  22. c) Acción más precisa combinando tres correcciones → PID (C en la guía dice PI, pero el enunciado dice "tres" = PID)
+//  23. d) Acción correctiva basada únicamente en el error presente → Proporcional (D)
+//  24. e) Combina correcciones proporcionales e integrales → PI (E)
+//  25. f) Integra acciones proporcionales y derivativas → PD (F)
+// Nota: La guía de respuestas tiene: 20→A(Integral), 21→B(On-off corr: la guía pone On-off en la col izq con B), 
+// Revisando la guía exacta: 20(a)=B On-off, 21(b)=D Proporcional, 22(c)=A Integral, 23(d)=E PD, 24(e)=F PID, 25(f)=C PI
+// Usando exactamente la guía con respuesta:
+const CONTROLADORES_CHARS = [
+  {id:'a', text:'Elimina el error en estado estacionario.'},
+  {id:'b', text:'Cambia entre dos estados (encendido/apagado).'},
+  {id:'c', text:'Ofrece la acción más precisa combinando tres tipos de correcciones.'},
+  {id:'d', text:'Proporciona una acción correctiva basada únicamente en el error presente.'},
+  {id:'e', text:'Combina correcciones proporcionales e integrales.'},
+  {id:'f', text:'Integra acciones proporcionales y derivativas.'},
+];
+const CONTROLADORES_CTRL = [
+  {id:'A', name:'Integral (I)'},
+  {id:'B', name:'On-off'},
+  {id:'C', name:'PI'},
+  {id:'D', name:'Proporcional (P)'},
+  {id:'E', name:'PD'},
+  {id:'F', name:'PID'},
+];
+// Mapeo correcto según la guía (característica → controlador):
+// a→A, b→B, c→F(PID), d→D, e→C(PI), f→E(PD)
+const CTRL_ANSWERS = {a:'A', b:'B', c:'F', d:'D', e:'C', f:'E'};
+
+// Explicaciones por controlador
+const CTRL_EXP = {
+  'A':'Integral (I): elimina el error en estado estacionario acumulando el error en el tiempo.',
+  'B':'On-off: el más simple, solo tiene dos estados: completamente encendido o apagado.',
+  'C':'PI: combina corrección proporcional (error presente) + integral (elimina error acumulado).',
+  'D':'Proporcional (P): actúa en proporción al error actual. Simple pero puede dejar error residual.',
+  'E':'PD: combina acción proporcional con derivativa (predice tendencia del error).',
+  'F':'PID: el más completo — combina proporcional + integral + derivativo para máxima precisión.',
+};
+
+// ══════════════════════════════════════════
+//  ESTADO GLOBAL
+// ══════════════════════════════════════════
+let xp=0, totalCorrect=0, totalQuizzes=0;
+const qState={};
+const gState={
+  g1:{data:GLOS1,filtered:GLOS1,cur:0,tag:'all'},
+  g2:{data:GLOS2,filtered:GLOS2,cur:0,tag:'all'},
+};
+let vfState={cur:0,score:0,ans:false,data:[]};
+let relState={selChar:null,matched:{},score:0};
+
+// ══════════════════════════════════════════
+//  NAVEGACIÓN
+// ══════════════════════════════════════════
+function nav(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('active');});
+  document.getElementById('sb').classList.remove('open');
+  if(id==='glos1'&&!document.getElementById('glist1').children.length) buildGlos('g1');
+  if(id==='glos2'&&!document.getElementById('glist2').children.length) buildGlos('g2');
+  if(id==='quiz1'&&!qState['q1']) initQuiz('q1',Q1,'q1-area');
+  if(id==='quiz2') initVF();
+  if(id==='quiz3') initRel();
+  window.scrollTo(0,0);
+}
+function toggleSB(){document.getElementById('sb').classList.toggle('open');}
+
+// ══════════════════════════════════════════
+//  GLOSARIO
+// ══════════════════════════════════════════
+function buildGlos(key){
+  const s=gState[key]; const n=key.slice(-1);
+  const listEl=document.getElementById('glist'+n);
+  listEl.innerHTML='';
+  if(!s.filtered.length){listEl.innerHTML='<p style="padding:.75rem 1rem;font-size:.82rem;color:var(--muted)">Sin resultados.</p>';return;}
+  s.filtered.forEach((t,i)=>{
+    const d=document.createElement('div');
+    d.className='glos-item'+(i===s.cur?' active':'');
+    d.innerHTML=`<span class="gi-ico">${t.icon}</span><span>${t.name}</span><span class="gi-num">${i+1}</span>`;
+    d.onclick=()=>goToTerm(key,i);
+    listEl.appendChild(d);
+  });
+  renderSlide(key);
+}
+function renderSlide(key){
+  const s=gState[key]; const n=key.slice(-1);
+  const total=s.filtered.length;
+  if(!total){document.getElementById('gslide'+n).innerHTML='<p style="color:var(--muted);padding:1rem">Sin términos.</p>';return;}
+  const idx=Math.min(s.cur,total-1); s.cur=idx;
+  const t=s.filtered[idx]; const tag=t.tag||'concepto';
+  const pbColors={concepto:'linear-gradient(90deg,#0891b2,#06b6d4)',control:'linear-gradient(90deg,#7c3aed,#6366f1)',transformada:'linear-gradient(90deg,#d97706,#eab308)',señal:'linear-gradient(90deg,#059669,#10b981)'};
+  const pbar=document.getElementById('g'+n+'-pbar');
+  pbar.style.width=`${((idx+1)/total)*100}%`;
+  pbar.style.background=pbColors[tag]||pbColors.concepto;
+  document.getElementById('g'+n+'-plab').textContent=`${idx+1} / ${total}`;
+  const ptag=document.getElementById('g'+n+'-ptag');
+  ptag.textContent=tag;
+  const tc={concepto:{bg:'#cffafe',col:'#155e75'},control:{bg:'#ede9fe',col:'#5b21b6'},transformada:{bg:'#fef3c7',col:'#92400e'},señal:{bg:'#d1fae5',col:'#065f46'}};
+  const c=tc[tag]||tc.concepto; ptag.style.background=c.bg; ptag.style.color=c.col;
+  const listEl=document.getElementById('glist'+n);
+  listEl.querySelectorAll('.glos-item').forEach((el,i)=>{el.classList.toggle('active',i===idx);if(i===idx)el.scrollIntoView({block:'nearest',behavior:'smooth'});});
+  const prev=idx>0; const next=idx<total-1;
+  document.getElementById('gslide'+n).innerHTML=`
+    <div class="glos-slide gs-bg-${tag}">
+      <div class="gs-hero">
+        <div class="gs-big-icon">${t.icon}</div>
+        <div class="gs-hero-text">
+          <span class="gs-tag t-${tag}">${tag}</span>
+          <div class="gs-name">${t.name}</div>
+        </div>
+      </div>
+      <div class="gs-body">
+        <div class="gs-def">${t.def}</div>
+        ${t.keys?`<div class="gs-keys">${t.keys.map(k=>`<span class="gs-key">${k}</span>`).join('')}</div>`:''}
+        ${t.memo?`<div class="gs-memo"><span class="gs-memo-ico">💡</span><div class="gs-memo-text"><strong>Truco para recordar:</strong> ${t.memo}</div></div>`:''}
+        <div class="gs-nav">
+          <div class="gs-kbd-hint"><span class="gs-kbd">←</span><span class="gs-kbd">→</span> navegar</div>
+          <span class="gs-nav-info">${idx+1} de ${total}</span>
+          <div class="gs-nav-btns">
+            <button class="btn sec" onclick="goToTerm('${key}',${idx-1})" ${prev?'':'disabled'}>← Anterior</button>
+            <button class="btn" onclick="goToTerm('${key}',${idx+1})" ${next?'':'disabled'}>Siguiente →</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  addXP(2);
+}
+function goToTerm(key,idx){
+  const s=gState[key];
+  if(idx<0||idx>=s.filtered.length)return;
+  s.cur=idx; renderSlide(key);
+}
+function gSearch(key){
+  const n=key.slice(-1);
+  const q=document.getElementById('gsearch'+n).value.toLowerCase();
+  const s=gState[key];
+  const src=s.tag==='all'?s.data:s.data.filter(t=>t.tag===s.tag);
+  s.filtered=q?src.filter(t=>t.name.toLowerCase().includes(q)||t.def.toLowerCase().includes(q)):src;
+  s.cur=0; buildGlos(key);
+}
+function gTag(key,tag,el){
+  const n=key.slice(-1);
+  gState[key].tag=tag;
+  document.getElementById('gpills'+n).querySelectorAll('.gpill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const q=document.getElementById('gsearch'+n).value.toLowerCase();
+  const src=tag==='all'?gState[key].data:gState[key].data.filter(t=>t.tag===tag);
+  gState[key].filtered=q?src.filter(t=>t.name.toLowerCase().includes(q)||t.def.toLowerCase().includes(q)):src;
+  gState[key].cur=0; buildGlos(key);
+}
+document.addEventListener('keydown',e=>{
+  const ag=['glos1','glos2'].find(id=>document.getElementById('page-'+id).classList.contains('active'));
+  if(ag){const key=ag==='glos1'?'g1':'g2';
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();goToTerm(key,gState[key].cur+1);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();goToTerm(key,gState[key].cur-1);}
+  }
+});
+
+// ══════════════════════════════════════════
+//  QUIZ 1 — Opción Múltiple
+// ══════════════════════════════════════════
+function initQuiz(key,data,areaId){
+  qState[key]={data:[...data],cur:0,score:0,ans:false};
+  renderQ(key,areaId);
+}
+function renderQ(key,areaId){
+  const s=qState[key];const q=s.data[s.cur];const tot=s.data.length;
+  document.getElementById(areaId).innerHTML=`
+    <div class="prog-hd"><span>Pregunta ${s.cur+1} de ${tot}</span><span class="slive">✓ ${s.score} correctas</span></div>
+    <div class="prog-tr"><div class="prog-fi" style="width:${(s.cur/tot)*100}%"></div></div>
+    <div class="qcard">
+      <div class="qnum">PREGUNTA ${String(s.cur+1).padStart(2,'0')}</div>
+      <div class="qtxt">${q.q}</div>
+      <div class="opts" id="${key}-opts"></div>
+      <div class="fb" id="${key}-fb"></div>
+      <div class="btn-row">
+        <button class="btn hidden" id="${key}-next" onclick="nextQ('${key}','${areaId}')">Siguiente →</button>
+        <button class="btn sec" onclick="initQuiz('${key}',Q1,'${areaId}')">↺ Reiniciar</button>
+      </div>
+    </div>`;
+  ['A','B','C','D'].forEach((l,i)=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=`<span class="ltr">${l}</span><span>${q.opts[i]}</span>`;
+    b.onclick=()=>selOpt(key,areaId,i);
+    document.getElementById(key+'-opts').appendChild(b);
+  });
+}
+function selOpt(key,areaId,idx){
+  const s=qState[key];if(s.ans)return;s.ans=true;
+  const q=s.data[s.cur];
+  document.querySelectorAll('#'+key+'-opts .opt').forEach((el,i)=>{
+    el.classList.add('locked');
+    if(i===q.ans)el.classList.add('correct');
+    else if(i===idx)el.classList.add('wrong');
+  });
+  const fb=document.getElementById(key+'-fb');
+  if(idx===q.ans){s.score++;fb.className='fb ok show';fb.textContent='✓ ¡Correcto! '+q.exp;addXP(10);totalCorrect++;}
+  else{fb.className='fb fail show';fb.textContent='✗ Incorrecto. '+q.exp;}
+  document.getElementById(key+'-next').classList.remove('hidden');
+  document.getElementById('stc').textContent=totalCorrect;
+}
+function nextQ(key,areaId){
+  const s=qState[key];s.cur++;s.ans=false;
+  s.cur>=s.data.length?showScore(key,areaId):renderQ(key,areaId);
+}
+function showScore(key,areaId){
+  const s=qState[key];const tot=s.data.length;const pct=s.score/tot;
+  totalQuizzes++;document.getElementById('stq').textContent=totalQuizzes;addXP(50);
+  const[ttl,msg]=pct===1?['🎓 ¡Perfecto!','Dominas todos los conceptos. ¡Listo para el examen!']:
+    pct>=.8?['💪 ¡Excelente!','Muy buen desempeño. Repasa los que fallaste.']:
+    pct>=.6?['⚠️ Aceptable','Hay conceptos que necesitan más atención.']:
+    ['📚 Necesitas repasar','Revisa el glosario antes de intentarlo de nuevo.'];
+  document.getElementById(areaId).innerHTML=`
+    <div class="score-wrap"><div class="qcard" style="padding:2.5rem 2rem">
+      <div class="score-ring"><div class="score-big">${s.score}</div><div class="score-of">de ${tot}</div></div>
+      <div class="score-ttl">${ttl}</div><div class="score-msg">${msg}</div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn" onclick="initQuiz('q1',Q1,'q1-area')">↺ Intentar de nuevo</button>
+      </div>
+    </div></div>`;
+}
+
+// ══════════════════════════════════════════
+//  QUIZ 2 — Verdadero / Falso
+// ══════════════════════════════════════════
+function initVF(){
+  vfState={cur:0,score:0,ans:false,data:Q2_VF};
+  renderVF();
+}
+function renderVF(){
+  const s=vfState;const q=s.data[s.cur];const tot=s.data.length;
+  document.getElementById('q2-area').innerHTML=`
+    <div class="prog-hd"><span>Enunciado ${s.cur+1} de ${tot}</span><span class="slive">✓ ${s.score} correctos</span></div>
+    <div class="prog-tr"><div class="prog-fi" style="width:${(s.cur/tot)*100}%"></div></div>
+    <div class="vf-card">
+      <div class="qnum">ENUNCIADO ${String(q.n).padStart(2,'0')}</div>
+      <div class="vf-stmt">${q.stmt}</div>
+      <div class="vf-btns">
+        <button class="vf-btn verd" id="vf-v" onclick="selVF(true)">✓ VERDADERO</button>
+        <button class="vf-btn fals" id="vf-f" onclick="selVF(false)">✗ FALSO</button>
+      </div>
+      <div class="fb" id="vf-fb"></div>
+      <div class="btn-row">
+        <button class="btn hidden" id="vf-next" onclick="nextVF()">Siguiente →</button>
+        <button class="btn sec" onclick="initVF()">↺ Reiniciar</button>
+      </div>
+    </div>`;
+}
+function selVF(val){
+  if(vfState.ans)return; vfState.ans=true;
+  const q=vfState.data[vfState.cur];
+  const vBtn=document.getElementById('vf-v');const fBtn=document.getElementById('vf-f');
+  vBtn.classList.add('locked');fBtn.classList.add('locked');
+  const correct=val===q.ans;
+  if(val)vBtn.classList.add(correct?'correct':'wrong');
+  else fBtn.classList.add(correct?'correct':'wrong');
+  if(!val&&q.ans)vBtn.classList.add('correct');
+  if(val&&!q.ans)fBtn.classList.add('correct');
+  const fb=document.getElementById('vf-fb');
+  if(correct){vfState.score++;fb.className='fb ok show';fb.textContent='✓ ¡Correcto! '+q.exp;addXP(10);totalCorrect++;document.getElementById('stc').textContent=totalCorrect;}
+  else{fb.className='fb fail show';fb.textContent='✗ Incorrecto. '+q.exp;}
+  document.getElementById('vf-next').classList.remove('hidden');
+}
+function nextVF(){
+  vfState.cur++;vfState.ans=false;
+  if(vfState.cur>=vfState.data.length)showVFScore();
+  else renderVF();
+}
+function showVFScore(){
+  const s=vfState;const tot=s.data.length;const pct=s.score/tot;
+  totalQuizzes++;document.getElementById('stq').textContent=totalQuizzes;addXP(50);
+  const[ttl,msg]=pct===1?['🎓 ¡Perfecto!','¡Todos los verdadero/falso correctos!']:
+    pct>=.8?['💪 ¡Excelente!','Muy bien. Revisa los que fallaste.']:
+    pct>=.6?['⚠️ Aceptable','Algunos enunciados confusos. Repasa el glosario.']:
+    ['📚 Necesitas repasar','Hay varios enunciados clave que debes dominar.'];
+  document.getElementById('q2-area').innerHTML=`
+    <div class="score-wrap"><div class="qcard" style="padding:2.5rem 2rem">
+      <div class="score-ring"><div class="score-big">${s.score}</div><div class="score-of">de ${tot}</div></div>
+      <div class="score-ttl">${ttl}</div><div class="score-msg">${msg}</div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn" onclick="initVF()">↺ Intentar de nuevo</button>
+      </div>
+    </div></div>`;
+}
+
+// ══════════════════════════════════════════
+//  QUIZ 3 — Relacionar Controladores
+// ══════════════════════════════════════════
+function initRel(){
+  relState={selChar:null,matched:{},score:0};
+  renderRel();
+}
+function renderRel(){
+  let charsHtml=CONTROLADORES_CHARS.map(c=>`
+    <div class="rel-item ${relState.matched[c.id]?'matched':''}" id="char-${c.id}" onclick="selChar('${c.id}')">
+      <span class="rel-letter">${c.id})</span>${c.text}
+      ${relState.matched[c.id]?`<br><small style="color:var(--green);font-weight:600">→ ${CONTROLADORES_CTRL.find(x=>x.id===relState.matched[c.id]).name}</small>`:''}
+    </div>`).join('');
+  let ctrlHtml=CONTROLADORES_CTRL.map(c=>{
+    const usedBy=Object.entries(relState.matched).find(([k,v])=>v===c.id);
+    return`<div class="rel-item ${usedBy?'matched':''}" id="ctrl-${c.id}" onclick="selCtrl('${c.id}')">
+      <span class="rel-letter">${c.id}.</span>${c.name}
+    </div>`;}).join('');
+  const done=Object.keys(relState.matched).length===6;
+  document.getElementById('q3-area').innerHTML=`
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:1rem">Selecciona una característica (izquierda) y luego el controlador correspondiente (derecha).</p>
+    <div class="rel-grid">
+      <div><div class="rel-col"><h4>Característica</h4>${charsHtml}</div></div>
+      <div><div class="rel-col"><h4>Controlador</h4>${ctrlHtml}</div></div>
+    </div>
+    <div class="rel-score">Emparejados: ${Object.keys(relState.matched).length} / 6</div>
+    <div class="rel-fb" id="rel-fb"></div>
+    ${done?`<div class="btn-row" style="margin-top:1rem">
+      <button class="btn sec" onclick="initRel()">↺ Reiniciar</button>
+    </div>`:''}
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="btn" style="background:var(--green)" onclick="showRelAnswers()">👁 Ver respuestas</button>
+    </div>`;
+  // Restore sel highlight
+  if(relState.selChar&&!relState.matched[relState.selChar]){
+    const el=document.getElementById('char-'+relState.selChar);
+    if(el)el.classList.add('sel');
+  }
+}
+function selChar(id){
+  if(relState.matched[id])return;
+  relState.selChar=id;
+  document.querySelectorAll('.rel-item').forEach(e=>e.classList.remove('sel'));
+  const el=document.getElementById('char-'+id);
+  if(el)el.classList.add('sel');
+}
+function selCtrl(id){
+  if(!relState.selChar)return;
+  const charId=relState.selChar;
+  if(Object.values(relState.matched).includes(id))return;
+  const correct=CTRL_ANSWERS[charId]===id;
+  if(correct){
+    relState.matched[charId]=id;
+    relState.score++;addXP(15);totalCorrect++;
+    document.getElementById('stc').textContent=totalCorrect;
+    const fb=document.getElementById('rel-fb')||{style:{display:'none'}};
+    relState.selChar=null;
+    renderRel();
+    const fbEl=document.getElementById('rel-fb');
+    if(fbEl){fbEl.className='rel-fb show ok';fbEl.textContent='✓ ¡Correcto! '+CTRL_EXP[id];}
+  } else {
+    const fbEl=document.getElementById('rel-fb');
+    if(fbEl){fbEl.className='rel-fb show fail';fbEl.textContent='✗ Incorrecto. Intenta con otro controlador.';}
+    const ctrlEl=document.getElementById('ctrl-'+id);
+    if(ctrlEl){ctrlEl.classList.add('wrong-match');setTimeout(()=>ctrlEl.classList.remove('wrong-match'),700);}
+  }
+  if(Object.keys(relState.matched).length===6){
+    totalQuizzes++;document.getElementById('stq').textContent=totalQuizzes;addXP(50);
+    renderRel();
+  }
+}
+function showRelAnswers(){
+  const lines=CONTROLADORES_CHARS.map(c=>`${c.id}) ${c.text.substring(0,40)}… → <strong>${CONTROLADORES_CTRL.find(x=>x.id===CTRL_ANSWERS[c.id]).name}</strong>`).join('<br>');
+  document.getElementById('q3-area').innerHTML=`
+    <div class="qcard">
+      <div class="qnum">RESPUESTAS CORRECTAS</div>
+      <div style="line-height:2;font-size:.95rem;color:var(--text2)">${lines}</div>
+      <div class="ibox" style="margin-top:1.25rem"><h4>Explicación de cada controlador</h4><ul>
+        <li><strong>On-off (B):</strong> Solo dos estados: encendido o apagado. El más simple.</li>
+        <li><strong>Proporcional — P (D):</strong> Acción proporcional al error presente. Puede dejar error residual.</li>
+        <li><strong>Integral — I (A):</strong> Elimina el error en estado estacionario acumulando el error.</li>
+        <li><strong>PD (E):</strong> Proporcional + Derivativo. Predice la tendencia del error.</li>
+        <li><strong>PI (C):</strong> Proporcional + Integral. Elimina el error residual del P.</li>
+        <li><strong>PID (F):</strong> Proporcional + Integral + Derivativo. El más completo y preciso.</li>
+      </ul></div>
+      <div class="btn-row" style="margin-top:1rem">
+        <button class="btn sec" onclick="initRel()">↺ Intentar de nuevo</button>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+//  XP
+// ══════════════════════════════════════════
+function addXP(pts){
+  xp+=pts;
+  document.getElementById('xpv').textContent=xp;
+  document.getElementById('xpf').style.width=Math.min(100,(xp%500)/5)+'%';
+}
+</script>
+</body>
+</html>
